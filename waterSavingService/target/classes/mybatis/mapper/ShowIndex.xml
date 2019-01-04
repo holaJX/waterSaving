@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.ShowIndexDao">
+
+    <sql id="EquipmentInfo_Column_List">
+        id, parent_id, user_id, office_id, area_id, name, equipment_no, password, isonline, pointlng, pointlat,
+        equipment_type, iconurl, sort, grouping_id, create_by, create_time, update_by, update_time, remarks, del_flag,
+        sign_label, equip_classify, max_value, min_value, threshold_alarm_state, offline_alarm_state
+    </sql>
+
+	<!-- 获取首部id信息-->
+	<select id="queryMeterEquipmentNo" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+		SELECT 
+			ei.id AS id,
+			ei.name AS name,
+			ei.equipment_no AS equipmentNo
+		FROM 
+			equipment_info ei 
+		RIGHT JOIN 
+			sys_office so ON so.id= ei.office_id 
+		WHERE 
+			so.type='3' AND so.del_flag ='0' AND ei.equipment_type='4' AND ei.del_flag='0' 
+	</select>
+	
+	<!-- 根据流量计编号获取上一次瞬时流量及最新 -->
+	<select id="queryValueByNo" parameterType="java.lang.String" resultType="java.util.Map" >  
+		SELECT
+		IFNULL(lastData.instantaneousflow,0.00) AS last,
+		IFNULL(currentData.instantaneousflow,0.00) AS now
+		FROM
+		(SELECT gmi.instantaneousflow FROM gsm_meter_instantaneousflowforday gmi	RIGHT JOIN equipment_info ei	ON ei.equipment_no = gmi.address
+			WHERE ei.equipment_no=#{equipmentNo} ORDER BY gmi.start_time DESC LIMIT 1,1) AS lastData,
+		(SELECT gmi.instantaneousflow FROM gsm_meter_instantaneousflowforday gmi	RIGHT JOIN equipment_info ei	ON ei.equipment_no = gmi.address
+			WHERE ei.equipment_no=#{equipmentNo}  ORDER BY gmi.start_time DESC LIMIT 1) AS currentData
+	</select>
+	
+	<!-- 获取用水量相关 -->
+	<select id="queryWaterCost" resultType="java.util.Map" >
+		select
+		IFNULL(lastMon.lastMonthWaterNumber,0.00) AS lastMonthWaterNumber,
+		IFNULL(currentMon.totalWaterNumber,0.00) AS totalWaterNumber,
+		IFNULL(currentMon.totalWaterNumber,0.00)*0.3 AS totalSaveWaterNumber
+		from
+		<!-- 上月用水量 -->
+		(SELECT IFNULL((SELECT cumulativeflow FROM gsm_meter_cumulative_water WHERE
+		DATE_FORMAT(copy_date, '%Y-%m') = DATE_FORMAT(DATE_SUB(curdate(), INTERVAL 1 MONTH),'%Y-%m')LIMIT 1),
+		0.00) as lastMonthWaterNumber ) AS lastMon,
+		<!-- 总用水量 -->
+		(SELECT IFNULL((SELECT cumulativeflow  FROM gsm_meter_cumulative_water ORDER BY copy_date DESC LIMIT 1),
+		0.00)	as totalWaterNumber) AS currentMon
+	</select>
+	
+	<!-- 获取状态监控 -->
+	<select id="querySolenoidValve" resultType="java.util.Map" >
+		select
+		IFNULL(A.totalOpenNumber,0) AS totalOpenNumber,
+		IFNULL(B.totalAllNumber,0) AS totalAllNumber,
+		IFNULL(C.totalNormalNumber,0) AS totalNormalNumber,
+		IFNULL(D.totalNumber,0) AS totalNumber
+		from
+		<!--电磁阀开启总数-->
+		(SELECT (SELECT ifnull(count(id),0) FROM fkq_valve_info WHERE valve1_status='2' AND valve1_status='1') +
+		(SELECT ifnull(count(id),0) FROM fkq_valve_info WHERE valve1_status='1' AND valve2_status='2') +
+		(SELECT ifnull(count(id),0) FROM fkq_valve_info WHERE valve1_status='2' AND valve2_status='2')*2 AS totalOpenNumber) AS A,
+		<!--电磁阀总数  每个电磁阀有2个阀门，故*2-->
+		(SELECT ifnull(count(id),0)*2 AS totalAllNumber FROM equipment_info WHERE equipment_type='3' AND del_flag = '0') AS B,
+		<!--压力计正常个数 -->
+		(SELECT ifnull(count(pmm.id),0) AS totalNormalNumber FROM pressure_meter_message pmm 
+			RIGHT JOIN equipment_info ei ON pmm.address= ei.equipment_no WHERE ei.equipment_type ='5' AND pmm.pressure_safey = '0' AND ei.del_flag='0') AS C,
+		<!--压力计个数 -->
+		(SELECT ifnull(count(pmm.id),0) AS totalNumber FROM pressure_meter_message pmm 
+			RIGHT JOIN equipment_info ei ON pmm.address= ei.equipment_no WHERE ei.equipment_type ='5' AND ei.del_flag='0') AS D
+	</select>
+	
+	<!-- 获取片区信息-->
+	<select id="queryPianQu" resultType="com.dyzhsw.efficient.entity.SysOffice">
+		SELECT 
+			id,name
+		FROM 
+			sys_office 
+		WHERE type ='2' AND del_flag ='0'
+	</select>
+	
+	<!-- 获取指定园区id下的所有水表信息-->
+	<select id="queryEquipmentList" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT equipment_no FROM equipment_info 
+		WHERE office_id=#{officeId}
+	</select>
+	
+	<!-- 按天统计 用水量-->
+	<select id="waterConsumptionByDay" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.WaterConsumption"> 
+		SELECT
+			IFNULL(value1.sum,0.00) AS value1,
+			IFNULL(value2.sum,0.00) AS value2,
+			IFNULL(value3.sum,0.00) AS value3,
+			IFNULL(value4.sum,0.00) AS value4,
+			IFNULL(value5.sum,0.00) AS value5,
+			IFNULL(value6.sum,0.00) AS value6,
+			IFNULL(value7.sum,0.00) AS value7,
+			IFNULL(value8.sum,0.00) AS value8,
+			IFNULL(value9.sum,0.00) AS value9,
+			IFNULL(value10.sum,0.00) AS value10,
+			IFNULL(value11.sum,0.00) AS value11,
+			IFNULL(value12.sum,0.00) AS value12
+		FROM
+			(SELECT SUM(cumulativeflow) AS sum FROM gsm_meter_cumulativeflowforday gmc LEFT JOIN equipment_info ei ON ei.equipment_no = gmc.address WHERE gmc.num >0 AND gmc.num <![CDATA[<]]>9 AND ei.equipment_no = #{equipmentNo}) as value1,
+			(SELECT SUM(cumulativeflow) AS sum FROM gsm_meter_cumulativeflowforday gmc LEFT JOIN equipment_info ei ON ei.equipment_no = gmc.address WHERE gmc.num >8 AND gmc.num <![CDATA[<]]>17 AND ei.equipment_no = #{equipmentNo}) as value2,
+			(SELECT SUM(cumulativeflow) AS sum FROM gsm_meter_cumulativeflowforday gmc LEFT JOIN equipment_info ei ON ei.equipment_no = gmc.address WHERE gmc.num >16 AND gmc.num <![CDATA[<]]>25 AND ei.equipment_no = #{equipmentNo}) as value3,
+			(SELECT SUM(cumulativeflow) AS sum FROM gsm_meter_cumulativeflowforday gmc LEFT JOIN equipment_info ei ON ei.equipment_no = gmc.address WHERE gmc.num >24 AND gmc.num <![CDATA[<]]>33 AND ei.equipment_no = #{equipmentNo}) as value4,
+			(SELECT SUM(cumulativeflow) AS sum FROM gsm_meter_cumulativeflowforday gmc LEFT JOIN equipment_info ei ON ei.equipment_no = gmc.address WHERE gmc.num >32 AND gmc.num <![CDATA[<]]>41 AND ei.equipment_no = #{equipmentNo}) as value5,
+			(SELECT SUM(cumulativeflow) AS sum FROM gsm_meter_cumulativeflowforday gmc LEFT JOIN equipment_info ei ON ei.equipment_no = gmc.address WHERE gmc.num >40 AND gmc.num <![CDATA[<]]>49 AND ei.equipment_no = #{equipmentNo}) as value6,
+			(SELECT SUM(cumulativeflow) AS sum FROM gsm_meter_cumulativeflowforday gmc LEFT JOIN equipment_info ei ON ei.equipment_no = gmc.address WHERE gmc.num >48 AND gmc.num <![CDATA[<]]>57 AND ei.equipment_no = #{equipmentNo}) as value7,
+			(SELECT SUM(cumulativeflow) AS sum FROM gsm_meter_cumulativeflowforday gmc LEFT JOIN equipment_info ei ON ei.equipment_no = gmc.address WHERE gmc.num >56 AND gmc.num <![CDATA[<]]>65 AND ei.equipment_no = #{equipmentNo}) as value8,
+			(SELECT SUM(cumulativeflow) AS sum FROM gsm_meter_cumulativeflowforday gmc LEFT JOIN equipment_info ei ON ei.equipment_no = gmc.address WHERE gmc.num >64 AND gmc.num <![CDATA[<]]>73 AND ei.equipment_no = #{equipmentNo}) as value9,
+			(SELECT SUM(cumulativeflow) AS sum FROM gsm_meter_cumulativeflowforday gmc LEFT JOIN equipment_info ei ON ei.equipment_no = gmc.address WHERE gmc.num >72 AND gmc.num <![CDATA[<]]>81 AND ei.equipment_no = #{equipmentNo}) as value10,
+			(SELECT SUM(cumulativeflow) AS sum FROM gsm_meter_cumulativeflowforday gmc LEFT JOIN equipment_info ei ON ei.equipment_no = gmc.address WHERE gmc.num >80 AND gmc.num <![CDATA[<]]>89 AND ei.equipment_no = #{equipmentNo}) as value11,
+			(SELECT SUM(cumulativeflow) AS sum FROM gsm_meter_cumulativeflowforday gmc LEFT JOIN equipment_info ei ON ei.equipment_no = gmc.address WHERE gmc.num >88 AND gmc.num <![CDATA[<]]>97 AND ei.equipment_no = #{equipmentNo}) as value12
+	</select>
+	
+	<!-- 按月统计 -->
+	<select id="waterConsumptionByMonth" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.WaterConsumption"> 
+		SELECT
+			IFNULL(value1.cumulativeflow,0.00) AS value1,
+			IFNULL(value12.copy_date_tmp-11,"") AS date1,
+			IFNULL(value2.cumulativeflow,0.00) AS value2,
+			IFNULL(value12.copy_date_tmp-10,"") AS date2,
+			IFNULL(value3.cumulativeflow,0.00) AS value3,
+			IFNULL(value12.copy_date_tmp-9,"") AS date3,
+			IFNULL(value4.cumulativeflow,0.00) AS value4,
+			IFNULL(value12.copy_date_tmp-8,"") AS date4,
+			IFNULL(value5.cumulativeflow,0.00) AS value5,
+			IFNULL(value12.copy_date_tmp-7,"") AS date5,
+			IFNULL(value6.cumulativeflow,0.00) AS value6,
+			IFNULL(value12.copy_date_tmp-6,"") AS date6,
+			IFNULL(value7.cumulativeflow,0.00) AS value7,
+			IFNULL(value12.copy_date_tmp-5,"") AS date7,
+			IFNULL(value8.cumulativeflow,0.00) AS value8,
+			IFNULL(value12.copy_date_tmp-4,"") AS date8,
+			IFNULL(value9.cumulativeflow,0.00) AS value9,
+			IFNULL(value12.copy_date_tmp-3,"") AS date9,
+			IFNULL(value10.cumulativeflow,0.00) AS value10,
+			IFNULL(value12.copy_date_tmp-2,"") AS date10,
+			IFNULL(value11.cumulativeflow,0.00) AS value11,
+			IFNULL(value12.copy_date_tmp-1,"") AS date11,
+			IFNULL(value12.cumulativeflow,0.00) AS value12,
+			IFNULL(value12.copy_date_tmp,"") AS date12
+		FROM
+			(SELECT cumulativeflow, DATE_FORMAT(copy_date, '%m') AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND PERIOD_DIFF(date_format(now(),'%Y%m' ) , date_format(copy_date,'%Y%m'))=11 AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value1,
+			(SELECT cumulativeflow, DATE_FORMAT(copy_date, '%m') AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND PERIOD_DIFF(date_format(now(),'%Y%m' ) , date_format(copy_date,'%Y%m'))=10 AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value2,
+			(SELECT cumulativeflow, DATE_FORMAT(copy_date, '%m') AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND PERIOD_DIFF(date_format(now(),'%Y%m' ) , date_format(copy_date,'%Y%m'))=9 AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value3,
+			(SELECT cumulativeflow, DATE_FORMAT(copy_date, '%m') AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND PERIOD_DIFF(date_format(now(),'%Y%m' ) , date_format(copy_date,'%Y%m'))=8 AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value4,
+			(SELECT cumulativeflow, DATE_FORMAT(copy_date, '%m') AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND PERIOD_DIFF(date_format(now(),'%Y%m' ) , date_format(copy_date,'%Y%m'))=7 AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value5,
+			(SELECT cumulativeflow, DATE_FORMAT(copy_date, '%m') AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND PERIOD_DIFF(date_format(now(),'%Y%m' ) , date_format(copy_date,'%Y%m'))=6 AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value6,
+			(SELECT cumulativeflow, DATE_FORMAT(copy_date, '%m') AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND PERIOD_DIFF(date_format(now(),'%Y%m' ) , date_format(copy_date,'%Y%m'))=5 AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value7,
+			(SELECT cumulativeflow, DATE_FORMAT(copy_date, '%m') AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND PERIOD_DIFF(date_format(now(),'%Y%m' ) , date_format(copy_date,'%Y%m'))=4 AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value8,
+			(SELECT cumulativeflow, DATE_FORMAT(copy_date, '%m') AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND PERIOD_DIFF(date_format(now(),'%Y%m' ) , date_format(copy_date,'%Y%m'))=3 AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value9,
+			(SELECT cumulativeflow, DATE_FORMAT(copy_date, '%m') AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND PERIOD_DIFF(date_format(now(),'%Y%m' ) , date_format(copy_date,'%Y%m'))=2 AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value10,
+			(SELECT cumulativeflow, DATE_FORMAT(copy_date, '%m') AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND PERIOD_DIFF(date_format(now(),'%Y%m' ) , date_format(copy_date,'%Y%m'))=1 AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value11,
+			(SELECT cumulativeflow, IFNULL((DATE_FORMAT(copy_date, '%m')),DATE_FORMAT(now(),"%m")) AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value12
+			<!-- (SELECT cumulativeflow, IFNULL((DATE_FORMAT(copy_date, '%m')),DATE_FORMAT(now(),"%m")) AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND DATE_FORMAT(copy_date,'%Y-%m') = DATE_FORMAT(now(),'%Y-%m') AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value12 -->
+	</select>
+	
+	<!-- 按年统计 -->
+	<select id="waterConsumptionByYear" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.WaterConsumption">  
+		SELECT
+			IFNULL(value1.cumulativeflow,0.00) AS value1,
+			IFNULL(value3.copy_date_tmp-2,"") AS date1,
+			IFNULL(value2.cumulativeflow,0.00) AS value2,
+			IFNULL(value3.copy_date_tmp-1,"") AS date2,
+			IFNULL(value3.cumulativeflow,0.00) AS value3,
+			IFNULL(value3.copy_date_tmp,"") AS date3
+		FROM
+			(SELECT cumulativeflow, DATE_FORMAT(copy_date, '%Y') AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND PERIOD_DIFF(date_format(now(),'%Y' ) , date_format(copy_date,'%Y'))=2 AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value1,
+			(SELECT cumulativeflow, DATE_FORMAT(copy_date, '%Y') AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND PERIOD_DIFF(date_format(now(),'%Y' ) , date_format(copy_date,'%Y'))=1 AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value2,
+			(SELECT cumulativeflow, IFNULL((DATE_FORMAT(copy_date, '%Y')),DATE_FORMAT(now(), '%Y')) AS copy_date_tmp, copy_date FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value3
+			<!-- (SELECT cumulativeflow, IFNULL((DATE_FORMAT(copy_date, '%Y')),DATE_FORMAT(now(), '%Y')) AS copy_date  FROM gsm_meter_cumulative_water gmcw RIGHT JOIN equipment_info ei ON ei.equipment_no = gmcw.address AND DATE_FORMAT(copy_date,'%Y-%m') = DATE_FORMAT(now(),'%Y-%m') AND ei.equipment_no = #{equipmentNo} ORDER BY copy_date DESC LIMIT 1)as value3 -->
+	</select>
+	
+	<!--  过滤器对应的流量计设备id列表 -->
+	<select id="queryFilter" resultType="com.dyzhsw.efficient.entity.FlowmeterHomeVo">  
+		SELECT 
+			ei.name as percolatorName,
+			ei.equipment_no as flowmeterEquipmentNo,
+			percolator_id as percolatorId, 
+			flowmeter_id as flowmeterId 
+		FROM 
+			equipment_relation er 
+		RIGHT JOIN 
+			equipment_info ei ON ei.id= er.percolator_id
+		WHERE 
+			ei.equipment_type='2' AND ei.del_flag='0' AND er.del_flag ='0'
+	</select>
+	
+	<!-- 根据流量计编号获取累计流量 -->
+	<select id="queryFilterValue" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.LineChartVo">  
+		SELECT
+			gmcw.cumulativeflow as value1,
+			DATE_FORMAT(gmcw.copy_date, '%m-%d') as copyTime,
+			WEEKDAY(gmcw.copy_date) as weekday
+		FROM
+			gsm_meter_cumulative_water gmcw
+		RIGHT JOIN equipment_info ei
+		ON ei.equipment_no = gmcw.address
+		WHERE 
+			ei.id=#{equipmentId}
+		ORDER BY gmcw.copy_date DESC
+		LIMIT 7
+	</select>
+	
+	<!-- 根据流量计编号获取最新瞬时流量 -->
+	<select id="queryInstantaneousflow" parameterType="java.lang.String" resultType="java.lang.String">  
+		SELECT 
+			gmi.instantaneousflow
+		FROM 
+			gsm_meter_instantaneousflowforday gmi
+		RIGHT JOIN equipment_info ei
+		ON ei.equipment_no = gmi.address
+		WHERE 
+			ei.id=#{equipmentId}
+		ORDER BY gmi.start_time DESC LIMIT 1
+	</select>
+	
+	<!-- 根据流量计编号获取最新最大瞬时流量 -->
+	<select id="queryInstantaneousflowMax" parameterType="java.lang.String" resultType="java.lang.String">  
+		SELECT 
+			max(gmi.instantaneousflow) AS instantaneousflow 
+		FROM 
+			gsm_meter_instantaneousflowforday  gmi
+		RIGHT JOIN equipment_info ei
+		ON ei.equipment_no = gmi.address
+		WHERE 
+			ei.id=#{equipmentId}
+		GROUP BY gmi.copy_date 
+		ORDER BY gmi.copy_date DESC LIMIT 1	
+	</select>
+	
+	<!-- 根据ids获取数据采集时间 -->
+	<select id="queryInstantaneousflowCopyTimeByIds" parameterType="java.util.List" resultType="java.lang.String">  
+		SELECT end_time 
+		FROM gsm_meter_instantaneousflowforday 
+		WHERE address in
+		<foreach collection="shoubuIds" index="index" item="shoubuId" open="(" separator="," close=")">  
+            #{shoubuId}  
+        </foreach>
+		ORDER BY end_time DESC LIMIT 1
+	</select>
+	
+	<!-- 根据id获取数据采集时间 -->
+	<select id="queryInstantaneousflowCopyTimeById" parameterType="java.util.List" resultType="java.lang.String">  
+		SELECT 
+			gmi.end_time 
+		FROM 
+			gsm_meter_instantaneousflowforday gmi
+		RIGHT JOIN 
+			equipment_info ei
+		ON 
+			ei.equipment_no = gmi.address
+		WHERE 
+			ei.id=#{equipmentId}
+		ORDER BY gmi.end_time DESC 
+		LIMIT 1
+	</select>
+	
+	<!--  施肥机设备id列表 -->
+	<select id="queryFertilizer" resultType="com.dyzhsw.efficient.entity.MetercalcFlowVo">   
+		SELECT	
+			ei.id as metercalcFlowId,
+			ei.equipment_no as metercalcFlowNo,
+			ei.name as metercalcFlowName,
+			wt.state AS state
+		FROM equipment_info ei
+		RIGHT JOIN wm_terminalinfo wt
+		ON wt.terminal_id = ei.equipment_no
+		WHERE ei.equipment_type='1' AND ei.del_flag='0'
+	</select>
+	
+	<!-- 施肥机根据编号获取累计流量记录 -->
+	<select id="queryFertilizerValue" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.LineChartVo">  
+		SELECT
+			cumulativeflow as value1,
+			DATE_FORMAT(collect_date, '%m-%d') as copyTime,
+			WEEKDAY(collect_date) as weekday
+		FROM
+			wm_metercalc_flowdetail
+		WHERE terminal_id = #{metercalcFlowId}
+		ORDER BY collect_date DESC
+		LIMIT 7
+	</select>
+	
+	<!-- 施肥机根据编号获取最新瞬时流量 -->
+	<select id="queryWmInstantaneousflow" parameterType="java.lang.String" resultType="java.lang.String">  
+		SELECT 
+			instantaneousflow
+		FROM 
+			wm_metercalc_flowdetail 
+		WHERE 
+			terminal_id= #{metercalcFlowId} 
+		ORDER BY collect_date DESC LIMIT 1
+	</select>
+	
+	<!-- 施肥机根据编号获取最新出口压力 -->
+	<select id="queryAmount" parameterType="java.lang.String" resultType="java.lang.String">  
+		SELECT 
+			amount
+		FROM 
+			wm_sensormonitor 
+		WHERE 
+			terminal_id= #{metercalcFlowId} 
+		ORDER BY collect_date DESC LIMIT 1
+	</select>
+	
+	<!-- 施肥机根据编号获取最新最大出口压力 -->
+	<select id="queryAmountMax" parameterType="java.lang.String" resultType="java.lang.String">  
+		SELECT 
+			max(amount) AS amount 
+		FROM 
+			wm_sensormonitor 
+		WHERE 
+			terminal_id= #{metercalcFlowId} 
+		ORDER BY collect_date DESC LIMIT 1
+	</select>
+	
+	<!-- 施肥机根据编号获取最新采集时间 -->
+	<select id="queryCopyTimeById" parameterType="java.lang.String" resultType="java.lang.String">  
+		SELECT 
+			collect_date 
+		FROM 
+			wm_metercalc_flowdetail 
+		WHERE 
+			terminal_id= #{metercalcFlowId} 
+		ORDER BY collect_date  DESC LIMIT 1
+	</select>
+
+    <select id="getEquipmentListByTypeOfficeId" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="EquipmentInfo_Column_List"/>
+        FROM equipment_info
+        WHERE office_id = #{officeId, jdbcType=VARCHAR}
+        AND equipment_type=#{equipmentType, jdbcType=INTEGER}
+        AND del_flag = 0
+        ORDER BY create_time DESC
+    </select>
+	
+</mapper>

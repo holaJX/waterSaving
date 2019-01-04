@@ -1,0 +1,71 @@
+# 基础配置
+server:
+   port:  8080
+   contextPath: /waterSavingManager/
+
+# 数据源配置
+spring:
+  datasource:
+     driver-class-name: com.mysql.jdbc.Driver
+     url: jdbc:mysql://rm-bp143n0e843pxo27jo.mysql.rds.aliyuncs.com:3306/jxdev_watersaving?useUnicode=true&characterEncoding=UTF-8
+     username: jxdevwatersaving
+     password: uTuwRtPA8lohY3uAcOI3
+     type: com.alibaba.druid.pool.DruidDataSource
+     # 下面为连接池的补充设置，应用到上面所有数据源中：初始化大小，最小，最大
+     initialSize: 5
+     maxActive: 100
+     minIdle: 5
+     # 配置获取连接等待超时的时间
+     maxWait: 8000
+     #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+     timeBetweenEvictionRunsMillis: 60000
+     #配置一个连接在池中最小生存的时间，单位是毫秒
+     minEvictableIdleTimeMillis: 300000
+     validationQuery: SELECT 1 FROM DUAL
+     testWhileIdle: true
+     testOnBorrow: false
+     testOnReturn: false
+     # 打开PSCache，并且指定每个连接上PSCache的大小
+     poolPreparedStatements: true
+     maxOpenPreparedStatements: 300
+     # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+     filters: stat,wall,slf4j
+     # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+     # 合并多个DruidDataSource的监控数据
+#     useGlobalDataSourceStat: true
+
+  http:
+    multipart: 
+      maxFileSize: 10Mb
+      maxRequestSize: 100Mb
+
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    password:
+    timeout: 6000  # 连接超时时长（毫秒）
+    pool:
+      max-active: 1000  # 连接池最大连接数（使用负值表示没有限制）
+      max-wait: -1      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+      max-idle: 10      # 连接池中的最大空闲连接
+      min-idle: 5       # 连接池中的最小空闲连接
+
+# Mybatis 配置
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+# 日志级别
+logging:
+  config: classpath:config/logback/logback-spring.xml
+
+
+
+
+    
+      
+  
+  
+  

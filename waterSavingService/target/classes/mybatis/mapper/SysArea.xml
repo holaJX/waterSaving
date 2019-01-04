@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.SysAreaDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.SysArea">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
+        <result column="parent_ids" jdbcType="VARCHAR" property="parentIds" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="sort" jdbcType="DECIMAL" property="sort" />
+        <result column="code" jdbcType="VARCHAR" property="code" />
+        <result column="type" jdbcType="INTEGER" property="type" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+        <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, parent_id, parent_ids, name, sort, code, type, create_by, create_time, update_by, update_time, remarks, del_flag
+    </sql>
+    <resultMap id="getSelf" type="com.dyzhsw.efficient.dto.SysAreaDTO">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
+        <result column="parent_ids" jdbcType="VARCHAR" property="parentIds" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="sort" jdbcType="DECIMAL" property="sort" />
+        <result column="code" jdbcType="VARCHAR" property="code" />
+        <result column="type" jdbcType="INTEGER" property="type" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+        <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+        <collection property="children" select="getAreas"  column="{parentId = id}">
+        </collection>
+    </resultMap>
+
+    <select id="getAreas" resultMap="getSelf" parameterType="java.util.Map">
+        SELECT
+        id,
+        name,
+        parent_id AS "parentId",
+        parent_ids AS "parentIds",
+        type,
+        sort,
+        code,
+        create_by AS "createBy",
+        create_time AS "createTime",
+        update_by AS "updateBy",
+        update_time AS "updateTime",
+        remarks,
+        del_flag AS "delFlag"
+
+        from sys_area where
+        del_flag = 0
+        <choose>
+            <when test="parentId != null and parentId!='' ">
+                and parent_id = #{parentId}
+            </when>
+            <otherwise>
+                and parent_id is NULL
+            </otherwise>
+        </choose>
+
+        order by sort desc
+    </select>
+</mapper>

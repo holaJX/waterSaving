@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.SysUserDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.SysUser">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="company_id" jdbcType="VARCHAR" property="companyId" />
+        <result column="office_id" jdbcType="VARCHAR" property="officeId" />
+        <result column="login_name" jdbcType="VARCHAR" property="loginName" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="mqttpassword" jdbcType="VARCHAR" property="mqttpassword" />
+        <result column="no" jdbcType="VARCHAR" property="no" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+        <result column="telephone" jdbcType="VARCHAR" property="telephone" />
+        <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+        <result column="user_type" jdbcType="VARCHAR" property="userType" />
+        <result column="photo" jdbcType="VARCHAR" property="photo" />
+        <result column="login_ip" jdbcType="VARCHAR" property="loginIp" />
+        <result column="login_date" jdbcType="TIMESTAMP" property="loginDate" />
+        <result column="project_no" jdbcType="INTEGER" property="projectNo" />
+        <result column="login_flag" jdbcType="INTEGER" property="loginFlag" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+        <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+        <result column="online" jdbcType="VARCHAR" property="online" />
+        <result column="officeName" jdbcType="VARCHAR" property="officeName" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, company_id, office_id, login_name, password, mqttpassword, no, name, email, telephone, mobile, user_type, photo, login_ip, login_date, project_no, login_flag,
+        create_by, create_time, update_by, update_time, remarks, del_flag, online
+    </sql>
+    
+    <sql id="Base_Column_List1">
+    	user.id as 'id',
+        user.company_id as 'companyId',
+        user.office_id as 'officeId',
+        user.login_name as 'loginName',
+        user.password as 'password',
+        user.mqttpassword as 'mqttpassword',
+        user.no as 'no',
+        user.name as 'name',
+        user.email as 'email',
+        user.telephone as 'telephone',
+        user.mobile as 'mobile',
+        user.user_type as 'userType',
+        user.photo as 'photo',
+        user.login_ip as 'loginIp',
+        user.login_date as 'loginDate',
+        user.project_no as 'projectNo',
+        user.login_flag as 'loginFlag',
+        user.create_by as 'createBy',
+        user.create_time as 'createTime',
+        user.update_by as 'updateBy',
+        user.update_time as 'updateTime',
+        user.remarks as 'remarks',
+        user.del_flag as 'delFlag',
+        user.online as 'online',
+        office.name as 'officeName',
+        ul.role_id as 'roleId'
+    </sql>
+    
+     <sql id="Export_Column_List">
+    	user.id as 'id',
+        user.company_id as 'companyId',
+        user.office_id as 'officeId',
+        user.login_name as 'loginName',
+        user.password as 'password',
+        user.mqttpassword as 'mqttpassword',
+        user.no as 'no',
+        user.name as 'name',
+        user.email as 'email',
+        user.telephone as 'telephone',
+        user.mobile as 'mobile',
+        user.user_type as 'userType',
+        user.photo as 'photo',
+        user.login_ip as 'loginIp',
+        user.login_date as 'loginDate',
+        user.project_no as 'projectNo',
+        user.login_flag as 'loginFlag',
+        user.create_by as 'createBy',
+        user.create_time as 'createTime',
+        user.update_by as 'updateBy',
+        user.update_time as 'updateTime',
+        user.remarks as 'remarks',
+        user.del_flag as 'delFlag',
+        user.online as 'online',
+        office1.name as 'officeName',
+        office2.name as 'parentName',
+        ul.role_id as 'roleId'
+    </sql>
+
+
+    <insert id="addUser" parameterType="com.dyzhsw.efficient.entity.SysUser">
+        INSERT INTO sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="companyId != null">
+                company_id,
+            </if>
+            <if test="officeId != null">
+                office_id,
+            </if>
+            <if test="loginName != null">
+                login_name,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="mqttpassword != null">
+                mqttpassword,
+            </if>
+            <if test="no != null">
+                no,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="telephone != null">
+                telephone,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="userType != null">
+                user_type,
+            </if>
+            <if test="photo != null">
+                photo,
+            </if>
+            <if test="loginIp != null">
+                login_ip,
+            </if>
+            <if test="loginDate != null">
+                login_date,
+            </if>
+            <if test="projectNo != null">
+                project_no,
+            </if>
+            <if test="loginFlag != null">
+                login_flag,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remarks != null">
+                remarks,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="online != null">
+                online,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="companyId != null">
+                #{companyId, jdbcType=VARCHAR},
+            </if>
+            <if test="officeId != null">
+                #{officeId, jdbcType=VARCHAR},
+            </if>
+            <if test="loginName != null">
+                #{loginName, jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password, jdbcType=DECIMAL},
+            </if>
+            <if test="mqttpassword != null">
+                #{mqttpassword, jdbcType=VARCHAR},
+            </if>
+            <if test="no != null">
+                #{no, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                #{email, jdbcType=VARCHAR},
+            </if>
+            <if test="telephone != null">
+                #{telephone, jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile, jdbcType=VARCHAR},
+            </if>
+            <if test="userType != null">
+                #{userType, jdbcType=VARCHAR},
+            </if>
+            <if test="photo != null">
+                #{photo, jdbcType=VARCHAR},
+            </if>
+            <if test="loginIp != null">
+                #{loginIp, jdbcType=VARCHAR},
+            </if>
+            <if test="loginDate != null">
+                #{loginDate, jdbcType=TIMESTAMP},
+            </if>
+            <if test="projectNo != null">
+                #{projectNo, jdbcType=INTEGER},
+            </if>
+            <if test="loginFlag != null">
+                #{loginFlag, jdbcType=INTEGER},
+            </if>
+            <if test="createBy != null">
+                #{createBy, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy, jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="remarks != null">
+                #{remarks, jdbcType=VARCHAR},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag, jdbcType=INTEGER},
+            </if>
+            <if test="online != null">
+                #{online, jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="updateSysUserInfo" parameterType="com.dyzhsw.efficient.entity.SysUser">
+        update sys_user
+        <set>
+            <if test="companyId != null">
+                company_id = #{companyId, jdbcType=VARCHAR},
+            </if>
+            <if test="officeId != null">
+                office_id = #{officeId, jdbcType=VARCHAR},
+            </if>
+            <if test="loginName != null">
+                login_name = #{loginName, jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                password = #{password, jdbcType=DECIMAL},
+            </if>
+            <if test="mqttpassword != null">
+                mqttpassword = #{mqttpassword, jdbcType=VARCHAR},
+            </if>
+            <if test="no != null">
+                no = #{no, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email = #{email, jdbcType=VARCHAR},
+            </if>
+            <if test="telephone != null">
+                telephone = #{telephone, jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile, jdbcType=VARCHAR},
+            </if>
+            <if test="userType != null">
+                user_type = #{userType, jdbcType=VARCHAR},
+            </if>
+            <if test="photo != null">
+                photo = #{photo, jdbcType=VARCHAR},
+            </if>
+            <if test="loginIp != null">
+                login_ip = #{loginIp, jdbcType=VARCHAR},
+            </if>
+            <if test="loginDate != null">
+                login_date = #{loginDate, jdbcType=TIMESTAMP},
+            </if>
+            <if test="projectNo != null">
+                project_no = #{projectNo, jdbcType=INTEGER},
+            </if>
+            <if test="loginFlag != null">
+                login_flag = #{loginFlag, jdbcType=INTEGER},
+            </if>
+            <if test="createBy != null">
+                creatr_by = #{createBy, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy, jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks, jdbcType=VARCHAR},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag, jdbcType=INTEGER},
+            </if>
+            <if test="online != null">
+                online = #{online, jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+
+    <select id="getCurrOfficeId" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT office_id FROM sys_user
+        WHERE id = #{currUserId, jdbcType=VARCHAR} AND del_flag = 0
+    </select>
+
+    <select id="findUserByLoginName" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysUser">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_user
+        WHERE login_name = #{loginName, jdbcType=VARCHAR}
+    </select>
+    <select id="selectById" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysUser">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_user
+        WHERE id = #{id, jdbcType=VARCHAR}
+    </select>
+
+    <update id="changeLoginDate" parameterType="java.lang.String">
+        UPDATE sys_user SET login_date = now() WHERE id=#{id, jdbcType=VARCHAR}
+    </update>
+    <update id="changePwd" parameterType="java.util.Map">
+        UPDATE sys_user SET password = #{newPwd}  WHERE id=#{id}
+    </update>
+    <update id="deletedUser" parameterType="java.lang.String">
+        UPDATE sys_user SET del_flag = 1, update_by = #{currUserId, jdbcType=VARCHAR}, update_time = now() WHERE id=#{id, jdbcType=VARCHAR}
+    </update>
+
+
+    <select id="getUserListByOfficeId" resultType="com.dyzhsw.efficient.entity.SysUser">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_user
+        WHERE del_flag = 0
+        <if test="loginName != null and loginName != '' ">
+            and login_name like concat('%', #{loginName},'%')
+        </if>
+        <if test="officeIds != null">
+            AND office_id IN
+            <foreach collection="officeIds" index="index" item="officeId" open="(" separator="," close=")">
+                #{officeId}
+            </foreach>
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    
+     <select id="findInfoById" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysUser">
+        SELECT <include refid="Base_Column_List1"/>
+        FROM sys_user user
+        LEFT JOIN sys_office office on user.office_id = office.id
+        LEFT JOIN sys_user_role ul on user.id = ul.user_id
+        WHERE user.id = #{id, jdbcType=VARCHAR}
+    </select>
+
+
+    <update id="updateOfficeId" parameterType="java.lang.String">
+        UPDATE sys_user
+        SET office_id = '', update_by = #{currUserId, jdbcType=VARCHAR}, update_time = now()
+        WHERE office_id = #{officeId, jdbcType=VARCHAR}
+    </update>
+    
+    <!-- 导出接口查询 -->
+    <select id="getListSysUserInfo" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysUser">
+        SELECT <include refid="Export_Column_List"/>
+        FROM sys_user user
+        LEFT JOIN sys_office office1 on user.office_id = office1.id
+        LEFT JOIN sys_user_role ul on user.id = ul.user_id
+        LEFT JOIN sys_office office2 on office1.parent_id = office2.id
+        <where>
+        	user.del_flag = 0
+			<if test="loginName != null and loginName != ''">
+				and LOCATE(#{loginName},user.login_name)>0
+			</if>
+			<if test="officeId != null and officeId != ''">
+				and user.office_id = #{officeId}
+			</if>
+			order by user.create_time DESC
+        </where>
+    </select>
+
+	<select id="selectByNameImport" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysUser">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_user
+        WHERE name = #{name, jdbcType=VARCHAR} and del_flag = 0
+    </select>
+    
+    
+    <insert id="insertUserImport" parameterType="com.dyzhsw.efficient.entity.SysUser">
+        INSERT INTO sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="companyId != null">
+                company_id,
+            </if>
+            <if test="officeId != null">
+                office_id,
+            </if>
+            <if test="loginName != null">
+                login_name,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="mqttpassword != null">
+                mqttpassword,
+            </if>
+            <if test="no != null">
+                no,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="telephone != null">
+                telephone,
+            </if>
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="userType != null">
+                user_type,
+            </if>
+            <if test="photo != null">
+                photo,
+            </if>
+            <if test="loginIp != null">
+                login_ip,
+            </if>
+            <if test="loginDate != null">
+                login_date,
+            </if>
+            <if test="projectNo != null">
+                project_no,
+            </if>
+            <if test="loginFlag != null">
+                login_flag,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remarks != null">
+                remarks,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="online != null">
+                online,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="companyId != null">
+                #{companyId, jdbcType=VARCHAR},
+            </if>
+            <if test="officeId != null">
+                #{officeId, jdbcType=VARCHAR},
+            </if>
+            <if test="loginName != null">
+                #{loginName, jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password, jdbcType=DECIMAL},
+            </if>
+            <if test="mqttpassword != null">
+                #{mqttpassword, jdbcType=VARCHAR},
+            </if>
+            <if test="no != null">
+                #{no, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                #{email, jdbcType=VARCHAR},
+            </if>
+            <if test="telephone != null">
+                #{telephone, jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                #{mobile, jdbcType=VARCHAR},
+            </if>
+            <if test="userType != null">
+                #{userType, jdbcType=VARCHAR},
+            </if>
+            <if test="photo != null">
+                #{photo, jdbcType=VARCHAR},
+            </if>
+            <if test="loginIp != null">
+                #{loginIp, jdbcType=VARCHAR},
+            </if>
+            <if test="loginDate != null">
+                #{loginDate, jdbcType=TIMESTAMP},
+            </if>
+            <if test="projectNo != null">
+                #{projectNo, jdbcType=INTEGER},
+            </if>
+            <if test="loginFlag != null">
+                #{loginFlag, jdbcType=INTEGER},
+            </if>
+            <if test="createBy != null">
+                #{createBy, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy, jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="remarks != null">
+                #{remarks, jdbcType=VARCHAR},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag, jdbcType=INTEGER},
+            </if>
+            <if test="online != null">
+                #{online, jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+</mapper>

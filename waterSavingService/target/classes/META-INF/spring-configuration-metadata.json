@@ -1,0 +1,33 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "com.dyzhsw.efficient.config.jwt.JwtConfigBean",
+      "name": "jwt",
+      "type": "com.dyzhsw.efficient.config.jwt.JwtConfigBean"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "com.dyzhsw.efficient.config.jwt.JwtConfigBean",
+      "name": "jwt.exclude-path-patterns",
+      "type": "java.lang.String[]"
+    },
+    {
+      "sourceType": "com.dyzhsw.efficient.config.jwt.JwtConfigBean",
+      "name": "jwt.path-patterns",
+      "type": "java.lang.String[]"
+    },
+    {
+      "sourceType": "com.dyzhsw.efficient.config.jwt.JwtConfigBean",
+      "defaultValue": 0,
+      "name": "jwt.validity",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "com.dyzhsw.efficient.config.jwt.JwtConfigBean",
+      "name": "jwt.validity-type",
+      "type": "java.lang.String"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+com\dyzhsw\efficient\controller\EquipmentWarnControllerTest.class
+com\dyzhsw\efficient\controller\UserControllerTest.class
+com\dyzhsw\efficient\BaseJunit.class
+com\dyzhsw\efficient\controller\EquipmentGroupingControllerTest.class
+com\dyzhsw\efficient\controller\SysOfficeControllerTest.class
+com\dyzhsw\efficient\controller\GsmMeterCountControllerTest.class
+com\dyzhsw\efficient\controller\ControlLogControllerTest.class
+com\dyzhsw\efficient\controller\EquipHistoryControllerTest.class
+com\dyzhsw\efficient\controller\EquipmentControllerTest.class
+com\dyzhsw\efficient\controller\ContextUserTest.class
+com\dyzhsw\efficient\controller\EquipmentTaskControllerTest.class
+com\dyzhsw\efficient\controller\TerminalControllerTest.class
+com\dyzhsw\efficient\controller\AreaControllerTest.class

@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.ControlLogMapper">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.ControlLog">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="equipment_id" jdbcType="VARCHAR" property="equipmentId" />
+        <result column="task_id" jdbcType="VARCHAR" property="taskId" />
+        <result column="user_id" jdbcType="VARCHAR" property="userId" />
+        <result column="control_type" jdbcType="INTEGER" property="controlType" />
+        <result column="content" jdbcType="VARCHAR" property="content" />
+        <result column="state" jdbcType="INTEGER" property="state" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+        <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+        <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+    </resultMap>
+    <sql id="Base_Column_List">
+         a.id, 
+         a.equipment_id, 
+         a.task_id, 
+         a.user_id, 
+         a.control_type, 
+         a.content, 
+         a.state, 
+         a.create_by, 
+         a.create_date,
+         a.remarks, 
+         a.del_flag
+    </sql>
+    
+    <sql id="Export_Log_List">
+         task.name as 'name',
+         cg.control_type as 'controlType',
+         cg.state as 'state',
+         cg.create_date as 'createDate',
+         equ.name as 'equipmentName',
+         task.openhour as 'openhour',
+         task.openmin as 'openmin',
+         task.closehour as 'closehour',
+         task.closemin as 'closemin',
+         task.type as 'taskType'
+    </sql>
+
+    <select id="selectAll" resultType="java.util.Map" parameterType ="java.util.Map">
+    select
+ 	    a.id as id,
+ 		task.name as name,
+ 		dict.label as type,
+ 		GROUP_CONCAT(e.name) as equList,
+		a.create_date as workTime,
+		a.state as state
+
+	from intelligence_control_log a
+	left join equipment_task task on task.id = a.task_id
+	left join task_equ_list l on l.task_id = task.id
+    left join equipment_info e on e.id = l.equ_id
+    left join sys_dict dict  on dict.value = task.type and dict.type = "task_type"
+    
+    left join sys_office office on office.id = task.office_id 
+    left join sys_office officet on officet.id = office.parent_id 
+    left join sys_office officeh on officeh.id = officet.parent_id 
+	<where>
+
+  	   <if test="officeId != null and officeId != '' ">
+  		     ( task.office_id  =#{officeId,jdbcType=VARCHAR} 
+  	   </if> 
+  	    <if test="officeId != null and officeId != '' ">
+  		       or officet.id  =#{officeId,jdbcType=VARCHAR} 
+  	   </if>
+  	   <if test="officeId != null and officeId != '' ">
+  		       or officeh.id  =#{officeId,jdbcType=VARCHAR} )
+  	   </if>  
+  	   <if test="name!= null and name != '' "> 
+  			and LOCATE(#{name},task.name)>0
+  	   </if>
+ 	   
+  	    <if test="type!= null and type != '' ">
+  		       and task.type = #{type}
+  	   </if>
+  	   <if test="start != null and start != '' ">
+		 <![CDATA[
+			and a.create_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and a.create_date <= #{end}
+		 ]]>		
+		</if>
+  	  and  a.del_flag  =0
+	</where>
+	group by a.id
+	order by a.create_date DESC
+    </select>
+    
+    <select id="selectById" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"/> 
+		from intelligence_control_log		
+		where id = #{id,jdbcType=VARCHAR}
+
+	</select>
+
+    <insert id="insertInfo" parameterType="com.dyzhsw.efficient.entity.ControlLog">
+        INSERT INTO intelligence_control_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="equipmentId != null">
+                equipment_id,
+            </if>
+            <if test="taskId != null">
+                task_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="controlType != null">
+                control_type,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+            <if test="state != null">
+                state,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="remarks != null">
+                remarks,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="equipmentId != null">
+                #{equipmentId, jdbcType=VARCHAR},
+            </if>
+            <if test="taskId != null">
+                #{taskId, jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                #{userId, jdbcType=VARCHAR},
+            </if>
+            <if test="controlType != null">
+                #{controlType, jdbcType=INTEGER},
+            </if>
+            <if test="content != null">
+                #{content, jdbcType=VARCHAR},
+            </if>
+            <if test="state != null">
+                #{state, jdbcType=INTEGER},
+            </if>
+            <if test="createBy != null">
+                #{createBy, jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null">
+                #{createDate, jdbcType=TIMESTAMP},
+            </if>
+            <if test="remarks != null">
+                #{remarks, jdbcType=VARCHAR},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag, jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="deleteById" parameterType="java.util.Arrays">
+        UPDATE intelligence_control_log
+        SET del_flag = 1,  create_date = now()
+        WHERE id in id
+    </update>
+    
+    <select id="getSfList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT 
+         equ.name as name,
+         equ.equipment_no as equipmentNo,
+         office.name as office,
+         task.fertilizing_amount as feiAmount,
+         concat(inter.create_date," ",task.openhour,":",task.openmin,":","00","~",task.closehour,":",task.closemin,":","00") as workTime
+         
+        FROM  intelligence_control_log inter
+        left join equipment_info equ on equ.id = inter.equipment_id
+        left join equipment_task task on task.id = inter.task_id
+        left join sys_office office on office.id = equ.office_id
+         <where>
+         <if test="address!= null and address != '' ">
+  		       and inter.equipment_id = #{address}
+  	     </if>
+  	     <if test="start != null and start != '' ">
+		 <![CDATA[
+			and inter.create_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and inter.create_date <= #{end}
+		 ]]>		
+		</if>
+		    and equ.equipment_type = 1 and inter.state = 0
+  	     </where>
+  	     order by inter.create_date Desc   
+    </select>
+    
+    <select id="getWaterList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT 
+         equ.name as name,
+         equ.equipment_no as equipmentNo,
+         office.name as office,
+         task.fertilizing_amount as sumWaterForDay,
+         concat(inter.create_date," ",task.openhour,":",task.openmin,":","00","~",task.closehour,":",task.closemin,":","00") as workTime
+         
+        FROM  intelligence_control_log inter
+        left join equipment_info equ on equ.id = inter.equipment_id
+        left join equipment_task task on task.id = inter.task_id
+        left join sys_office office on office.id = equ.office_id
+         <where>
+         <if test="address!= null and address != '' ">
+  		       and inter.equipment_id = #{address}
+  	     </if>
+  	     <if test="start != null and start != '' ">
+		 <![CDATA[
+			and inter.create_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and inter.create_date <= #{end}
+		 ]]>		
+		</if>
+		    and equ.equipment_type = 1 and inter.state = 0
+  	     </where>
+  	     order by inter.create_date Desc   
+    </select>
+    
+		<!-- app获取智能控制操作日志 lhl -->
+		 <select id="selectcontrolAll" resultType="java.util.Map" parameterType ="java.util.Map">
+    select
+ 	   IFNULL(a.id,"") as id,
+ 	    IFNULL(a.task_id,"") as taskid, 	
+ 	     IFNULL(a.user_id,"") as userid, 	
+ 	     IFNULL(a.state,"") as state,
+ 	    IFNULL( a.create_date,"") as createdate, 	
+ 	     IFNULL(a.remarks,"") as remarks, 
+ 		 IFNULL(task.name,"") as name, 		
+ 		 IFNULL(task.type,"") as type, 	
+ 		 IFNULL(dict.description,"") as typeName 	
+	from intelligence_control_log a
+	left join equipment_task task on task.id = a.task_id
+    left join sys_dict dict  on dict.value = task.type and dict.type = "task_type"
+	<where>
+  	  1=1
+  	   <if test="name!= null and name != '' ">
+  		    and task.name like 
+  			concat(#{name},'%') 
+  	   </if>
+  	    <if test="type!= null and type != '' ">
+  		       and task.type = #{type}
+  	   </if>
+  	   <if test="start != null and start != '' ">
+		 <![CDATA[
+			and a.create_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and a.create_date <= #{end}
+		 ]]>		
+		</if>
+  	  and  a.del_flag  =0
+	</where>
+	order by a.create_date DESC
+    </select>
+    
+    
+    <select id="getLogExport" resultType="com.dyzhsw.efficient.entity.ControlLog">
+    select
+ 	    a.id as id,
+ 		task.name as name,
+ 		dict.label as taskType,
+ 		GROUP_CONCAT(e.name) as equList,
+		a.create_date,
+		a.state as state
+
+	from intelligence_control_log a
+	left join equipment_task task on task.id = a.task_id
+	left join task_equ_list l on l.task_id = task.id
+    left join equipment_info e on e.id = l.equ_id
+    left join sys_dict dict  on dict.value = task.type and dict.type = "task_type"
+    
+   left join sys_office office on office.id = task.office_id 
+    left join sys_office officet on officet.id = office.parent_id 
+    left join sys_office officeh on officeh.id = officet.parent_id
+	<where>
+
+  	    <if test="officeId != null and officeId != '' ">
+  		     ( task.office_id  =#{officeId,jdbcType=VARCHAR} 
+  	   </if> 
+  	    <if test="officeId != null and officeId != '' ">
+  		       or officet.id  =#{officeId,jdbcType=VARCHAR} 
+  	   </if>
+  	   <if test="officeId != null and officeId != '' ">
+  		       or officeh.id  =#{officeId,jdbcType=VARCHAR} )
+  	   </if>   
+  	   <if test="name!= null and name != '' "> 
+  			and LOCATE(#{name},task.name)>0
+  	   </if>
+ 	   
+  	    <if test="type!= null and type != '' ">
+  		       and task.type = #{type}
+  	   </if>
+  	   <if test="start != null and start != '' ">
+		 <![CDATA[
+			and a.create_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and a.create_date <= #{end}
+		 ]]>		
+		</if>
+  	  and  a.del_flag  =0
+	</where>
+	group by a.id
+	order by a.create_date DESC
+		<!-- select <include refid="Export_Log_List"/> 
+		from intelligence_control_log cg
+		left join equipment_info equ on
+		equ.id = cg.equipment_id
+		left join equipment_task task on
+		task.id = cg.task_id
+		<where>
+			cg.del_flag = 0
+			<if test="name != null and name != '' ">
+			and LOCATE(#{name},task.name)>0
+			</if>
+			<if test="type != null and type != '' ">
+			and task.type = #{type}
+			</if>
+			<if test="start != null and start != '' ">
+			 <![CDATA[
+				and cg.create_date >= #{start}
+			 ]]>	
+			</if>
+			<if test="end != null and end != '' ">
+			<![CDATA[
+				and cg.create_date <= #{end}
+			 ]]>		
+			</if>
+		</where>
+		order by cg.create_date desc	 -->	
+	</select>
+</mapper>

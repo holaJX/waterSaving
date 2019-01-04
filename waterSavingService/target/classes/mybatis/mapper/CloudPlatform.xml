@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.CloudPlatformDao">
+
+    <sql id="EuqipmentInfo_Column_List">
+        id, parent_id, user_id, office_id, area_id, name, equipment_no, password, isonline, pointlng, pointlat,
+        equipment_type, iconurl, sort, grouping_id, create_by, create_time, update_by, update_time, remarks, del_flag,
+        sign_label, equip_classify, max_value, min_value, threshold_alarm_state, offline_alarm_state
+    </sql>
+     
+     <sql id="EuqipmentInfo_Simple_Column_List">
+		ei.id as id,
+		office_id as officeId, 
+		so.name as officeName,
+		ei.name as name, 
+		ei.equipment_no as equipmentNo,
+		ei.isonline as isonline, 
+		ei.pointlng as pointlng, 
+		ei.pointlat as pointlat,
+		ei.equipment_type as equipmentType, 
+		ei.iconurl as iconurl, 
+		ei.sort as sort, 
+		ei.grouping_id as groupingId
+    </sql>
+    
+	<!-- 根据type获取设备信息列表-->
+	<select id="switchedSystem" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+		SELECT 
+			<include refid="EuqipmentInfo_Simple_Column_List"/>
+		FROM
+			equipment_info ei
+		RIGHT JOIN sys_office so ON so.id = ei.office_id
+		WHERE
+			ei.equipment_type = #{equipmentType}
+		AND ei.del_flag = 0
+	</select>
+	
+	<select id="queryFilterValue" resultType="com.dyzhsw.efficient.entity.LineChartVo">
+		SELECT
+			cumulativeflow as value1,
+			DATE_FORMAT(copy_date, '%m-%d') as copyTime
+		FROM
+			gsm_meter_cumulative_water
+		WHERE address = (
+			SELECT equipment_no FROM
+				equipment_info 
+			WHERE id=(
+				SELECT 
+					flowmeter_id 
+				FROM 
+					equipment_relation er 
+				RIGHT JOIN 
+					equipment_info ei ON ei.id= er.percolator_id 
+				WHERE 
+					er.percolator_id=#{equipmentId}
+				AND ei.del_flag='0' AND er.del_flag ='0'))
+		ORDER BY copy_date DESC
+	</select>
+	
+	<select id="queryInstantaneousflowCopyTimeById" resultType="java.lang.String">
+		SELECT 
+			gmi.end_time 
+		FROM 
+			gsm_meter_instantaneousflowforday gmi
+		RIGHT JOIN 
+			equipment_info ei
+		ON 
+			ei.equipment_no = gmi.address
+		WHERE 
+			ei.id=(
+				SELECT 
+					flowmeter_id 
+				FROM 
+					equipment_relation er 
+				RIGHT JOIN 
+					equipment_info ei ON ei.id= er.percolator_id 
+				WHERE 
+					er.percolator_id=#{equipmentId}
+				AND ei.del_flag='0' AND er.del_flag ='0')
+		ORDER BY gmi.end_time DESC 
+		LIMIT 1
+	</select>
+	
+	<select id="queryFilterHistory" resultType="com.dyzhsw.efficient.entity.LineChartVo">
+		SELECT
+			cumulativeflow as value1,
+			DATE_FORMAT(copy_date, '%m-%d') as copyTime
+		FROM
+			gsm_meter_cumulative_water
+		WHERE address = (
+			SELECT equipment_no FROM
+				equipment_info 
+			WHERE id=(
+				SELECT 
+					flowmeter_id 
+				FROM 
+					equipment_relation er 
+				RIGHT JOIN 
+					equipment_info ei ON ei.id= er.percolator_id 
+				WHERE 
+					er.percolator_id=#{equipmentId}
+				AND ei.del_flag='0' AND er.del_flag ='0'))
+		ORDER BY copy_date DESC
+	</select>
+	
+	<select id="queryCumulativeflow" resultType="java.lang.String">
+		SELECT
+			cumulativeflow
+		FROM
+			wm_metercalc_flowdetail
+		WHERE terminal_id = #{terminalId}
+		ORDER BY collect_date DESC
+		LIMIT 1
+	</select>
+	
+	<select id="queryWmState" resultType="java.lang.String">
+		SELECT
+			state
+		FROM
+			wm_terminalstateinfo
+		WHERE terminal_id = #{terminalId}
+		ORDER BY collect_date DESC
+		LIMIT 1
+	</select>
+	
+</mapper>

@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.WmMetercalcFlowdetailDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.WmMetercalcFlowdetail">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="msg_id" jdbcType="VARCHAR" property="msgId" />
+        <result column="terminal_id" jdbcType="VARCHAR" property="terminalId" />
+        <result column="serial_no_server" jdbcType="VARCHAR" property="serialNoServer" />
+        <result column="serial_no_terminal" jdbcType="VARCHAR" property="serialNoTerminal" />
+        <result column="collect_date" jdbcType="TIMESTAMP" property="collectDate" />
+        <result column="cumulativeflow_increment" jdbcType="DECIMAL" property="cumulativeflowIncrement" />
+        <result column="instantaneousflow" jdbcType="DECIMAL" property="instantaneousflow" />
+        <result column="cumulativeflow" jdbcType="DECIMAL" property="cumulativeflow" />
+        <result column="state" jdbcType="INTEGER" property="state" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, msg_id, terminal_id, serial_no_server, serial_no_terminal, collect_date, cumulativeflow_increment, instantaneousflow,
+        cumulativeflow, state, create_time,update_time
+    </sql>
+
+
+    <insert id="addInfo" parameterType="com.dyzhsw.efficient.entity.GsmMeterCumulativeflowforday">
+        INSERT INTO wm_metercalc_flowdetail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="msgId != null">
+                msg_id,
+            </if>
+            <if test="terminalId != null">
+                terminal_id,
+            </if>
+            <if test="serialNoServer != null">
+                serial_no_server,
+            </if>
+            <if test="serialNoTerminal != null">
+                serial_no_terminal,
+            </if>
+            <if test="collectDate != null">
+                collect_date,
+            </if>
+            <if test="cumulativeflowIncrement != null">
+                cumulativeflow_increment,
+            </if>
+            <if test="instantaneousflow != null">
+                instantaneousflow,
+            </if>
+            <if test="cumulativeflow != null">
+                cumulativeflow,
+            </if>
+            <if test="state != null">
+                state,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>        
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR}
+            </if>
+            <if test="msgId != null">
+                #{msgId, jdbcType=VARCHAR}
+            </if>
+            <if test="terminalId != null">
+                #{terminalId, jdbcType=VARCHAR}
+            </if>
+            <if test="serialNoServer != null">
+                #{serialNoServer, jdbcType=VARCHAR}
+            </if>
+            <if test="serialNoTerminal != null">
+                #{serialNoTerminal, jdbcType=VARCHAR}
+            </if>
+            <if test="collectDate != null">
+                #{collectDate, jdbcType=TIMESTAMP}
+            </if>
+            <if test="cumulativeflowIncrement != null">
+                #{cumulativeflowIncrement, jdbcType=DECIMAL}
+            </if>
+            <if test="instantaneousflow != null">
+                #{instantaneousflow, jdbcType=DECIMAL}
+            </if>
+            <if test="cumulativeflow != null">
+                #{cumulativeflow, jdbcType=DECIMAL}
+            </if>
+            <if test="state != null">
+                #{state, jdbcType=INTEGER}
+            </if>     
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                #{updateTime, jdbcType=TIMESTAMP}
+            </if>          
+        </trim>
+    </insert>
+
+
+    <select id="selectSfList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT max(cast(cumulativeflow as decimal(19,2)))-min(cast(cumulativeflow as decimal(19,2))) as sumWaterForDay ,equ.name as name, DATE_FORMAT(meter.collect_date ,"%Y-%m-%d")  as date
+        FROM  wm_metercalc_flowdetail meter
+        left join equipment_info equ on equ.equipment_no = meter.terminal_id
+         <where>
+  	     <if test="start != null and start != '' ">
+		 <![CDATA[
+			and meter.collect_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and meter.collect_date <= #{end}
+		 ]]>		
+		</if> and equ.id = #{equId}
+  	     </where>
+  	     group by TO_DAYS(meter.collect_date) 
+  	     order by DATE_FORMAT(meter.collect_date ,"%Y-%m-%d")      
+    </select>
+    
+    <select id="selectSfInfoList" resultType="com.dyzhsw.efficient.entity.WmMetercalcFlowdetail">
+        SELECT max(cast(cumulativeflow as decimal(19,2)))-min(cast(cumulativeflow as decimal(19,2))) as 'sfDay' ,equ.name as 'equipmentName',
+        equ.equipment_no as equipmentNo,meter.collect_date as 'collectDate',
+        concat(office2.name,office1.name) as officeName
+        FROM  wm_metercalc_flowdetail meter
+        left join equipment_info equ on equ.equipment_no = meter.terminal_id
+         left join sys_office office1 on office1.id = equ.office_id
+        left join sys_office office2 on office1.parent_id = office2.id
+         <where>
+         equ.equipment_type = 1
+  	     <if test="start != null and start != '' ">
+		 <![CDATA[
+			and meter.collect_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and meter.collect_date <= #{end}
+		 ]]>		
+		</if> 
+		<if test="address !=null and address != '' ">
+  		       and equ.id = #{address}
+  	     </if>
+  	     </where>
+  	   group by TO_DAYS(meter.collect_date) 
+  	     order by meter.terminal_id,DATE_FORMAT(meter.collect_date ,"%Y-%m-%d")  Desc 
+    </select>
+    
+    
+     <select id="selectSfOrder" parameterType="java.util.Map" resultType="java.util.Map">
+        select a.sumSf,a.name from(
+		select
+		IFNULL((max(cast(cumulativeflow as decimal(19,2)))-min(cast(cumulativeflow as decimal(19,2)))),0) as sumSf ,
+         equ.name as name
+		from equipment_info equ
+		left join wm_metercalc_flowdetail meter on meter.terminal_id = equ.equipment_no 
+       <where>
+  	     <if test="start != null and start != '' ">
+		 <![CDATA[
+		    meter.collect_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and meter.collect_date <= #{end}
+		 ]]>		
+		</if>
+	
+	    and equ.equipment_type = 1
+	    </where>
+		group by equ.equipment_no
+		union 
+      select
+		    0 as sumSf,
+	    	equ1.name as name
+
+		from equipment_info equ1
+		left join wm_metercalc_flowdetail meter1 on meter1.terminal_id = equ1.equipment_no 
+
+        where equ1.equipment_no NOT  IN  ( SELECT me.terminal_id FROM wm_metercalc_flowdetail me
+     <where>
+  	     <if test="start != null and start != '' ">
+		 <![CDATA[
+		    me.collect_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and me.collect_date <= #{end}
+		 ]]>		
+		</if>
+		</where>
+       )and equ1.equipment_type = 1
+     )a
+      group by a.name
+      order by a.sumSf Desc    
+    </select>
+    
+    
+    <select id="getSfList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT max(cumulativeflow)-min(cumulativeflow) as sumSfForDay ,equ.name as name,meter.terminal_id as equNo,DATE_FORMAT(meter.collect_date ,"%Y-%m-%d")  as date,
+        concat(officep.name,office.name )as officeName
+        FROM  wm_metercalc_flowdetail meter
+        left join equipment_info equ on equ.equipment_no = meter.terminal_id
+        left join sys_office office on office.id = equ.office_id
+        left join sys_office officep on officep.id = office.parent_id
+         <where>
+         1=1 
+         <if test="address!= null and address != '' ">
+  		       and equ.id = #{address}
+  	     </if>
+  	     <if test="start != null and start != '' ">
+		 <![CDATA[
+			and meter.collect_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and meter.collect_date <= #{end}
+		 ]]>		
+		</if>
+  	     </where>
+  	     group by TO_DAYS(meter.collect_date) 
+  	     order by meter.terminal_id,DATE_FORMAT(meter.collect_date ,"%Y-%m-%d")  Desc   
+  	    
+    </select>
+    
+     <select id="getWmMFList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT 
+         IFNULL(a.id,"") as id,
+         IFNULL(a.terminal_id,"") as equipmentNo,
+         IFNULL(a.collect_date,"") as collectdate,
+         IFNULL(a.cumulativeflow_increment,"") as cumulativefloincrement,
+         IFNULL(a.instantaneousflow,"") as instantaneousflow,
+         IFNULL(a.cumulativeflow,"") as cumulativeflow,
+         IFNULL(a.state,"") as state,         
+         IFNULL(equ.name,"") as name
+        FROM  wm_metercalc_flowdetail a
+        left join equipment_info equ on equ.equipment_no = a.terminal_id
+         <where>
+         1=1 
+         <if test="address!= null and address != '' ">
+  		       and a.terminal_id = #{address}
+  	     </if>
+  	     <if test="start != null and start != '' ">
+		 <![CDATA[
+			and a.collect_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and a.collect_date <= #{end}
+		 ]]>		
+		</if>
+  	     </where>
+  	     order by a.collect_date Desc   
+    </select>
+
+	<select id="getWmMFnewdata" parameterType="java.util.Map" resultType="java.util.Map">
+		        SELECT 
+		         IFNULL(a.id,"") as id,
+		         IFNULL(a.terminal_id,"") as equipmentNo,
+		         IFNULL(a.collect_date,"") as collectdate,
+		         IFNULL(a.cumulativeflow_increment,"") as cumulativefloincrement,
+		         IFNULL(a.instantaneousflow,"") as instantaneousflow,
+		         IFNULL(a.cumulativeflow,"") as cumulativeflow,
+		         IFNULL(a.state,"") as state,         
+		         IFNULL(equ.name,"") as name
+		        FROM  wm_metercalc_flowdetail a
+		        left join equipment_info equ on equ.equipment_no = a.terminal_id
+		         <where>
+		        	 1=1 and a.terminal_id = #{address}
+		  	     </where>
+		  	     order by a.collect_date Desc   limit 1  
+		    </select>
+
+
+    <select id="getDetailInfoByEquNo" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.WmMetercalcFlowdetail">
+        SELECT <include refid="Base_Column_List"/>
+        FROM wm_metercalc_flowdetail
+        WHERE terminal_id = #{equNo, jdbcType=VARCHAR}
+        AND state = 0 limit 1
+    </select>
+
+</mapper>

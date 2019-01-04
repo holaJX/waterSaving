@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.GsmMeterInstantaneousflowfordayDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.GsmMeterInstantaneousflowforday">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="address" jdbcType="VARCHAR" property="address" />
+        <result column="copy_date" jdbcType="DATE" property="copyDate" />
+        <result column="warn_data" jdbcType="VARCHAR" property="warnData" />
+        <result column="instantaneousflow" jdbcType="VARCHAR" property="instantaneousflow" />
+        <result column="terminal_datetime" jdbcType="TIMESTAMP" property="terminalDatetime" />
+        <result column="terminal_voltage" jdbcType="VARCHAR" property="terminalVoltage" />
+        <result column="csq" jdbcType="VARCHAR" property="csq" />
+        <result column="version" jdbcType="VARCHAR" property="version" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="num" jdbcType="INTEGER" property="num" />
+        <result column="end_time" jdbcType="INTEGER" property="endTime" />
+        <result column="start_time" jdbcType="INTEGER" property="startTime" />
+
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, address, copy_date, warn_data, instantaneousflow, terminal_datetime, terminal_voltage, csq, version, create_time, update_time, num, end_time, start_time
+    </sql>
+
+
+
+    <select id="selectGraphByEquNo" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.GsmMeterInstantaneousflowforday">
+        SELECT <include refid="Base_Column_List"/>
+        FROM gsm_meter_instantaneousflowforday
+        WHERE address = #{equNo, jdbcType=VARCHAR}
+        AND <![CDATA[ DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= end_time ]]>
+        ORDER BY create_time DESC limit 500
+    </select>
+
+    <select id="selectByEquNo" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.GsmMeterInstantaneousflowforday">
+        SELECT <include refid="Base_Column_List"/>
+        FROM gsm_meter_instantaneousflowforday
+        WHERE address = #{equNo, jdbcType=VARCHAR}
+        ORDER BY create_time DESC
+    </select>
+
+
+</mapper>

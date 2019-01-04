@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.TaskEquListDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.TaskEquList">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="task_id" jdbcType="VARCHAR" property="taskId" />
+        <result column="equ_id" jdbcType="VARCHAR" property="equId" />        
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />  
+        <result column="remarks" jdbcType="VARCHAR" property="remarks" />     
+    </resultMap>
+    <sql id="Base_Column_List">
+         a.id, 
+         a.task_id, 
+         a.equ_id, 
+         a.create_time,
+         a.remarks
+    </sql>
+
+    <select id="selectAll" resultType="java.util.Map" parameterType ="java.util.Map">
+    select
+ 	    a.id as id,
+ 		task.name as name,
+ 		dict.label as type,
+ 		GROUP_CONCAT(e.name) as equList,
+		concat(a.create_date," ",task.openhour,":",task.openmin,":","00","~",task.closehour,":",task.closemin,":","00") as workTime,
+		a.state as state
+
+	from intelligence_control_log a
+	left join equipment_task task on task.id = a.task_id
+	left join task_equ_list l on l.task_id = task.id
+    left join equipment_info e on e.id = l.equ_id
+    left join sys_dict dict  on dict.value = task.type and dict.type = "task_type"
+	<where>
+  	  1=1
+  	   <if test="name!= null and name != '' ">
+  		    and task.name like 
+  			concat(#{name},'%') 
+  	   </if>
+  	    <if test="type!= null and type != '' ">
+  		       and task.type = #{type}
+  	   </if>
+  	   <if test="start != null and start != '' ">
+		 <![CDATA[
+			and a.create_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and a.create_date <= #{end}
+		 ]]>		
+		</if>
+  	  and  a.del_flag  =0
+	</where>
+	order by a.create_date DESC
+    </select>
+    
+    <select id="selectByTaskId" parameterType="java.lang.String"
+		resultType="java.util.Map">
+		select 
+		  t.equ_id as id,
+		  concat(grouping.name,"-",e.name) as name
+		from task_equ_list t 
+		left join equipment_info e on e.id = t.equ_id 
+		left join equipment_grouping grouping on grouping.id = e.grouping_id		
+		where t.task_id = #{taskId,jdbcType=VARCHAR}
+
+	</select>
+
+    <insert id="addTaskEqu" parameterType="com.dyzhsw.efficient.entity.TaskEquList">
+        INSERT INTO task_equ_list
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="taskId != null">
+                task_id,
+            </if>
+            <if test="equId != null">
+                equ_id,
+            </if>                 
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="remarks != null">
+                remarks,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="taskId != null">
+                #{taskId, jdbcType=VARCHAR},
+            </if>
+            <if test="equId != null">
+                #{equId, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="remarks != null">
+                #{remarks, jdbcType=VARCHAR},
+            </if>
+  
+        </trim>
+    </insert>
+
+
+    
+    <delete id="deleteBytaskId" parameterType="java.util.Arrays">
+       delete from task_equ_list
+        WHERE task_id in 
+     <foreach collection="array" index="index" item="id" open="(" separator="," close=")">
+       #{id}           
+     </foreach> 
+    </delete>
+    
+    <delete id="deleteByTaskIdone" parameterType="java.lang.String">
+		delete from task_equ_list
+		where task_id = #{id,jdbcType=VARCHAR}
+	</delete>
+
+    <delete id="deletedByEquId" parameterType="java.lang.String">
+        delete from task_equ_list
+		where equ_id = #{equId,jdbcType=VARCHAR}
+    </delete>
+    
+   
+   <!-- 根据任务id获取任务列表 app接口 -->
+    <select id="selectAllApp" resultType="com.dyzhsw.efficient.entity.TaskEquList" parameterType ="java.lang.String">
+    select
+		a.id AS id,
+		a.task_id AS taskId,
+		a.equ_id AS equId,
+		a.create_time AS createTime,
+		a.remarks AS remarks,
+		e.name AS equipmentName,
+		e.equipment_no AS equipmentNo
+		from task_equ_list a
+	    left join equipment_info e on e.id = a.equ_id
+		<where>
+	  	  1=1
+	  	  and a.task_id = #{taskId} 
+	  	
+		</where>
+		order by a.create_time DESC
+    </select>
+   
+</mapper>

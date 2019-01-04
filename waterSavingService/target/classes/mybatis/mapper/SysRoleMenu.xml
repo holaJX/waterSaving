@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.SysRoleMenuDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.SysRoleMenu">
+        <result column="role_id" jdbcType="VARCHAR" property="roleId" />
+        <result column="menu_id" jdbcType="VARCHAR" property="menuId" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        role_id, menu_id
+    </sql>
+
+
+    <insert id="addRoleMenu" parameterType="com.dyzhsw.efficient.entity.SysRoleMenu">
+        INSERT INTO sys_role_menu (role_id, menu_id) VALUE (#{roleId, jdbcType=VARCHAR}, #{menuId, jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="deletedByMenuId" parameterType="java.lang.String">
+        DELETE FROM sys_role_menu WHERE menu_id = #{menuId, jdbcType=VARCHAR};
+    </delete>
+
+    <delete id="deletedByRoleId" parameterType="java.lang.String">
+        DELETE FROM sys_role_menu WHERE role_id = #{roleId, jdbcType=VARCHAR};
+    </delete>
+
+    <delete id="deletedByRoleMenu">
+        DELETE FROM sys_role_menu WHERE role_id = #{roleId, jdbcType=VARCHAR} AND menu_id = #{menuId, jdbcType=VARCHAR}
+    </delete>
+
+
+    <select id="selectMenuIdByRoleId" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT menu_id
+        FROM sys_role_menu
+        WHERE role_id = #{roleId, jdbcType=VARCHAR};
+    </select>
+
+    <select id="selectByRoleMenu" parameterType="com.dyzhsw.efficient.entity.SysRoleMenu" resultType="com.dyzhsw.efficient.entity.SysRoleMenu">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_role_menu
+        WHERE role_id = #{roleId, jdbcType=VARCHAR} AND menu_id = #{menuId, jdbcType=VARCHAR}
+    </select>
+
+    <update id="updateRoleMenuByRoleId" parameterType="com.dyzhsw.efficient.entity.SysRoleMenu">
+        UPDATE sys_role_menu SET menu_id = #{menuId, jdbcType=VARCHAR} WHERE role_id = #{roleId, jdbcType=VARCHAR}
+    </update>
+
+</mapper>

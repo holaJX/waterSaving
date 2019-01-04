@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.GsmMeterCumulativeflowfordayDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.GsmMeterCumulativeflowforday">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="address" jdbcType="TIMESTAMP" property="address" />
+        <result column="copy_date" jdbcType="TIMESTAMP" property="copyDate" />
+        <result column="warn_data" jdbcType="VARCHAR" property="warnData" />
+        <result column="cumulativeflow" jdbcType="VARCHAR" property="cumulativeflow" />
+        <result column="forwardCount" jdbcType="VARCHAR" property="forwardCount" />
+        <result column="backwardCount" jdbcType="VARCHAR" property="backwardCount" />
+        <result column="terminal_time" jdbcType="TIMESTAMP" property="terminalTime" />
+        <result column="terminal_voltage" jdbcType="VARCHAR" property="terminalVoltage" />
+        <result column="csq" jdbcType="VARCHAR" property="csq" />
+        <result column="version" jdbcType="VARCHAR" property="version" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="num" jdbcType="INTEGER" property="num" />
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, address, copy_date, warn_data, cumulativeflow, forwardCount, backwardCount, terminal_time,
+        terminal_voltage, csq, version,create_time,update_time,num,start_time,end_time
+    </sql>
+
+
+    <insert id="addInfo" parameterType="com.dyzhsw.efficient.entity.GsmMeterCumulativeflowforday">
+        INSERT INTO gsm_meter_cumulativeflowforday
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="copyDate != null">
+                copy_date,
+            </if>
+            <if test="warnData != null">
+                warn_data,
+            </if>
+            <if test="cumulativeflow != null">
+                cumulativeflow,
+            </if>
+            <if test="forwardCount != null">
+                forwardCount,
+            </if>
+            <if test="backwardCount != null">
+                backwardCount,
+            </if>
+            <if test="terminalTime != null">
+                terminal_time,
+            </if>
+            <if test="terminalVoltage != null">
+                terminal_voltage,
+            </if>
+            <if test="csq != null">
+                csq,
+            </if>
+            <if test="version != null">
+                version,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="num != null">
+                num,
+            </if>
+            <if test="startTime != null">
+                start_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                #{address, jdbcType=VARCHAR}
+            </if>
+            <if test="copyDate != null">
+                #{copyDate, jdbcType=TIMESTAMP}
+            </if>
+            <if test="warnData != null">
+                #{warnData, jdbcType=VARCHAR}
+            </if>
+            <if test="cumulativeflow != null">
+                #{cumulativeflow, jdbcType=VARCHAR}
+            </if>
+            <if test="forwardCount != null">
+                #{forwardCount, jdbcType=VARCHAR}
+            </if>
+            <if test="backwardCount != null">
+                #{backwardCount, jdbcType=VARCHAR}
+            </if>
+            <if test="terminalTime != null">
+                #{terminalTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="terminalVoltage != null">
+                #{terminalVoltage, jdbcType=VARCHAR}
+            </if>
+            <if test="csq != null">
+                #{csq, jdbcType=VARCHAR}
+            </if>
+            <if test="version != null">
+                #{version, jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                #{updateTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="num != null">
+                #{num, jdbcType=VARCHAR}
+            </if>
+            <if test="startTime != null">
+                #{startTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="endTime != null">
+                #{endTime, jdbcType=TIMESTAMP}
+            </if>
+        </trim>
+    </insert>
+
+
+    <select id="selectWaterList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT max(cast(cumulativeflow as decimal(19,2)))-min(cast(cumulativeflow as decimal(19,2))) as sumWaterForDay ,equ.name as name,meter.copy_date as date
+        FROM  gsm_meter_cumulativeflowforday meter
+        left join equipment_info equ on equ.equipment_no = meter.address
+         <where>
+  	     <if test="start != null and start != '' ">
+		 <![CDATA[
+		    meter.copy_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and meter.copy_date <= #{end}
+		 ]]>		
+		</if>
+		 and equ.id = #{id}
+  	     </where>
+  	     group by meter.copy_date
+  	     order by meter.copy_date     
+    </select>
+    
+    <select id="selectWaterOrder" parameterType="java.util.Map" resultType="java.util.Map">
+      select a.sumWater,a.name from(
+		select
+		IFNULL((max(cast(cumulativeflow as decimal(19,2)))-min(cast(cumulativeflow as decimal(19,2)))),0) as sumWater ,
+         equ.name as name
+		from equipment_info equ
+		left join gsm_meter_cumulativeflowforday meter on meter.address = equ.equipment_no 
+       <where>
+  	     <if test="start != null and start != '' ">
+		 <![CDATA[
+		    meter.copy_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and meter.copy_date <= #{end}
+		 ]]>		
+		</if>
+	
+	    and equ.equipment_type = 4
+	    </where>
+		group by equ.equipment_no
+		union 
+      select
+		    0 as sumWater,
+	    	equ1.name as name
+
+		from equipment_info equ1
+		left join gsm_meter_cumulativeflowforday meter1 on meter1.address = equ1.equipment_no 
+
+        where equ1.equipment_no NOT  IN  ( SELECT me.address FROM gsm_meter_cumulativeflowforday me
+     <where>
+  	     <if test="start != null and start != '' ">
+		 <![CDATA[
+		    me.copy_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and me.copy_date <= #{end}
+		 ]]>		
+		</if>
+		</where>
+       )and equ1.equipment_type = 4
+     )a
+      group by a.name
+      order by a.sumWater Desc   
+    </select>
+    
+    <select id="getWaterList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT max(cast(cumulativeflow as decimal(19,2)))-min(cast(cumulativeflow as decimal(19,2))) as sumWaterForDay ,equ.name as name,equ.equipment_no as equipmentNo,
+        concat(officep.name,office.name ) as officeName,meter.copy_date as date
+        FROM  gsm_meter_cumulativeflowforday meter
+        left join equipment_info equ on equ.equipment_no = meter.address
+        left join sys_office office on office.id = equ.office_id
+        left join sys_office officep on officep.id = office.parent_id
+         <where>
+         <if test="address!= null and address != '' ">
+  		       and equ.id = #{address}
+  	     </if>
+  	     <if test="start != null and start != '' ">
+		 <![CDATA[
+			and meter.copy_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and meter.copy_date <= #{end}
+		 ]]>		
+		</if>		
+		  
+  	     </where>
+  	     group by meter.address,meter.copy_date
+  	     order by meter.copy_date Desc   
+    </select>
+    
+     <select id="selectWaterInfoList"  resultType="com.dyzhsw.efficient.entity.GsmMeterCumulativeflowforday">
+        SELECT max(cast(cumulativeflow as decimal(19,2)))-min(cast(cumulativeflow as decimal(19,2))) as sumWaterDay ,equ.name as equipmentName,equ.equipment_no as equipmentNo,
+        concat(officep.name,office.name ) as officeName,meter.copy_date as copyDate
+        FROM  gsm_meter_cumulativeflowforday meter
+        left join equipment_info equ on equ.equipment_no = meter.address
+        left join sys_office office on office.id = equ.office_id
+        left join sys_office officep on officep.id = office.parent_id
+         <where>
+         <if test="address!= null and address != '' ">
+  		       and equ.id = #{address}
+  	     </if>
+  	     <if test="start != null and start != '' ">
+		 <![CDATA[
+			and meter.copy_date >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and meter.copy_date <= #{end}
+		 ]]>		
+		</if>		
+		  
+  	     </where>
+  	     group by meter.address,meter.copy_date
+  	     order by meter.copy_date Desc   
+    </select>
+
+</mapper>

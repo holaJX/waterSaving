@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.dyzhsw.efficient</groupId>
+  <artifactId>water-saving-parent</artifactId>
+  <packaging>pom</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <modules>
+    <module>waterSavingManager</module>
+    <module>waterSavingShow</module>
+    <module>waterSavingApp</module>
+    <module>waterSavingService</module>
+  </modules>
+
+  <name>water-saving-parent</name>
+  <!-- FIXME change it to the project's website -->
+  <url>http://www.example.com</url>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>1.5.9.RELEASE</version>
+  </parent>
+
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- manager -->
+      <dependency>
+        <groupId>com.dyzhsw.efficient</groupId>
+        <artifactId>water-saving-manager</artifactId>
+        <version>1.0-SNAPSHOT</version>
+      </dependency>
+
+      <!-- app -->
+      <dependency>
+        <groupId>com.dyzhsw.efficient</groupId>
+        <artifactId>water-saving-app</artifactId>
+        <version>1.0-SNAPSHOT</version>
+      </dependency>
+
+      <!-- show -->
+      <dependency>
+        <groupId>com.dyzhsw.efficient</groupId>
+        <artifactId>water-saving-show</artifactId>
+        <version>1.0-SNAPSHOT</version>
+      </dependency>
+
+      <!-- service -->
+      <dependency>
+        <groupId>com.dyzhsw.efficient</groupId>
+        <artifactId>water-saving-service</artifactId>
+        <version>1.0-SNAPSHOT</version>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
+</project>

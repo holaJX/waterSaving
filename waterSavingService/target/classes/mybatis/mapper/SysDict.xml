@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.SysDictDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.SysDict">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="value" jdbcType="VARCHAR" property="value" />
+        <result column="label" jdbcType="VARCHAR" property="label" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="sort" jdbcType="DECIMAL" property="sort" />
+        <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+        <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, value, label, type, description, sort, parent_id, create_by, create_time, update_by, update_time,
+        remarks, del_flag
+    </sql>
+  <select id="selectAll" resultMap="BaseResultMap">
+  	select * from sys_dict
+  </select>
+
+
+    <select id="selectAllOfficeTypeList" resultType="com.dyzhsw.efficient.entity.SysDict">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_dict WHERE type = 'office_type' AND del_flag = 0 ORDER BY sort;
+    </select>
+
+    <select id="selectCurrOfficeTypeList" resultType="com.dyzhsw.efficient.entity.SysDict">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_dict WHERE type = 'office_type' AND del_flag = 0 AND <![CDATA[ value > #{currOfficeType, jdbcType=VARCHAR}  ]]> ORDER BY sort;
+    </select>
+
+    <select id="selectWarnTypeByType" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysDict">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_dict WHERE type = #{type, jdbcType=VARCHAR} AND del_flag = 0 ORDER BY sort;
+    </select>
+
+    <select id="selectTypeNameByEquType" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT label FROM sys_dict WHERE type = 'equipment_type' AND value = #{equTypeValue} AND del_flag = 0
+    </select>
+
+    <select id="getEquTypeList" resultType="com.dyzhsw.efficient.entity.SysDict">
+        SELECT <include refid="Base_Column_List"/> FROM sys_dict WHERE type = 'equipment_type' AND del_flag = 0 ORDER BY sort
+    </select>
+
+    <select id="getOfficeTypeList" resultType="com.dyzhsw.efficient.entity.SysDict">
+        SELECT <include refid="Base_Column_List"/> FROM sys_dict WHERE type = 'office_type' AND del_flag = 0 ORDER BY sort
+    </select>
+    
+    <select id="getEquInfoExport" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysDict">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_dict WHERE value = #{value, jdbcType=VARCHAR} AND del_flag = 0 and type = "equipment_type" ORDER BY sort;
+    </select>
+    
+     <select id="getWarnInfoExport" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysDict">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_dict WHERE value = #{value, jdbcType=VARCHAR} AND del_flag = 0 ORDER BY sort;
+    </select>
+    
+    <select id="getTaskInfoExport" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysDict">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_dict WHERE value = #{value, jdbcType=VARCHAR} AND del_flag = 0 and type = "task_type" ORDER BY sort;
+    </select>
+    
+    <select id="getSysOfficeExport" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysDict">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_dict WHERE value = #{value, jdbcType=VARCHAR} AND del_flag = 0 and type = "office_type" ORDER BY sort;
+    </select>
+    
+    <select id="getSfExport" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysDict">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_dict WHERE value = #{value, jdbcType=VARCHAR} AND del_flag = 0 and type = "wm_warn_type" ORDER BY sort;
+    </select>
+    
+    <select id="getLlExport" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysDict">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_dict WHERE value = #{value, jdbcType=VARCHAR} AND del_flag = 0 and type = "gsm_warn_type" ORDER BY sort;
+    </select>
+    
+    <select id="getYlExport" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysDict">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_dict WHERE value = #{value, jdbcType=VARCHAR} AND del_flag = 0 and type = "pre_warn_type" ORDER BY sort;
+    </select>
+</mapper>

@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.FkqValveInfoDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.FkqValveInfo">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="equipment_id" jdbcType="VARCHAR" property="equipmentId" />
+        <result column="telemetry_station_addr" jdbcType="VARCHAR" property="telemetryStationAddr" />
+        <result column="center_station_addr" jdbcType="VARCHAR" property="centerStationAddr" />
+        <result column="valve1_status" jdbcType="INTEGER" property="valve1Status" />
+        <result column="valve2_status" jdbcType="INTEGER" property="valve2Status" />
+        <result column="water1_status" jdbcType="INTEGER" property="water1Status" />
+        <result column="water2_status" jdbcType="INTEGER" property="water2Status" />
+        <result column="valve_signal_quality" jdbcType="INTEGER" property="valveSignalQuality" />
+        <result column="valve_voltage" jdbcType="DOUBLE" property="valveVoltage" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="isonline" jdbcType="INTEGER" property="isonline" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, equipment_id, telemetry_station_addr, center_station_addr, valve1_status, valve2_status, water1_status, water2_status,
+        valve_signal_quality, valve_voltage, update_time, isonline
+    </sql>
+
+
+    <insert id="addFkqValveInfo" parameterType="com.dyzhsw.efficient.entity.FkqValveInfo">
+        INSERT INTO fkq_valve_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="equipmentId != null">
+                equipment_id,
+            </if>
+            <if test="telemetryStationAddr != null">
+                telemetry_station_addr,
+            </if>
+            <if test="centerStationAddr != null">
+                center_station_addr,
+            </if>
+            <if test="valve1Status != null">
+                valve1_status,
+            </if>
+            <if test="valve2Status != null">
+                valve2_status,
+            </if>
+            <if test="water1Status != null">
+                water1_status,
+            </if>
+            <if test="water2Status != null">
+                water2_status,
+            </if>
+            <if test="valveSignalQuality != null">
+                valve_signal_quality,
+            </if>
+            <if test="valveVoltage != null">
+                valve_voltage,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isonline != null">
+                isonline,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="equipmentId != null">
+                #{equipmentId, jdbcType=VARCHAR},
+            </if>
+            <if test="telemetryStationAddr != null">
+                #{telemetryStationAddr, jdbcType=VARCHAR},
+            </if>
+            <if test="centerStationAddr != null">
+                #{centerStationAddr, jdbcType=VARCHAR},
+            </if>
+            <if test="valve1Status != null">
+                #{valve1Status, jdbcType=INTEGER},
+            </if>
+            <if test="valve2Status != null">
+                #{valve2Status, jdbcType=INTEGER},
+            </if>
+            <if test="water1Status != null">
+                #{water1Status, jdbcType=INTEGER},
+            </if>
+            <if test="water2Status != null">
+                #{water2Status, jdbcType=INTEGER},
+            </if>
+            <if test="valveSignalQuality != null">
+                #{valveSignalQuality, jdbcType=INTEGER},
+            </if>
+            <if test="valveVoltage != null">
+                #{valveVoltage, jdbcType=DOUBLE},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="isonline != null">
+                #{isonline, jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="selectByEquipmentId" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.FkqValveInfo">
+        SELECT <include refid="Base_Column_List"/>
+        FROM fkq_valve_info
+        WHERE equipment_id = #{equipmentId, jdbcType=VARCHAR}
+    </select>
+
+<!-- app获取阀控器历史数据 -->
+	 <select id="selectFkqAllApp" parameterType="java.util.Map" resultType="java.util.Map">
+       SELECT 
+         IFNULL(a.id,"") AS id,
+         IFNULL(a.equipment_id,"") AS equipmentId,
+         IFNULL(a.telemetry_station_addr,"") AS telemetryStationAddr,
+         IFNULL(a.center_station_addr,"") AS centerStationAddr, 
+         IFNULL(a.valve1_status,"") AS valve1Status, 
+         IFNULL(a.valve2_status,"") AS valve2Status, 
+         IFNULL(a.water1_status,"") AS water1Status, 
+         IFNULL(a.water2_status,"") AS water2Status,
+         IFNULL(a.valve_signal_quality,"") AS valveSignalQuality, 
+         IFNULL(a.valve_voltage,"") AS valveVoltage,
+         IFNULL(a.update_time,null) AS updateTime, 
+         IFNULL(a.isonline,null) AS isonline,
+				IFNULL(eq.name,"") AS equipName,
+				IFNULL(eq.equipment_no,"") AS equipmentNo,
+				IFNULL(eq.office_id,"") AS officeid,
+				IFNULL(so.name,"") AS officeName,
+				IFNULL(eq.grouping_id,"") AS groupingid,
+				IFNULL(eg.name,"") AS groupName
+        FROM fkq_valve_info a
+				join equipment_info eq on a.equipment_id=eq.id
+				join sys_office so on so.id=eq.office_id
+				join equipment_grouping eg on eg.id=eq.grouping_id
+			WHERE
+        		1=1
+        		<if test="equipmentNo != null and equipmentNo != ''">
+                	and eq.equipment_no =#{equipmentNo}
+            	</if>
+            	<if test="equipName != null and equipName != ''">
+                	and eq.name =#{equipName}
+            	</if>
+				 <if test="startTime != null and startTime != '' ">
+               		 and <![CDATA[ a.update_time ='' >= #{startTime} ]]>
+           		 </if>
+           		 <if test="endTime != null and endTime != '' ">
+                	and <![CDATA[ a.update_time <= #{endTime} ]]>
+            	</if>
+			ORDER BY a.update_time desc
+    </select>
+	 <select id="selectFkqNewApp" parameterType="java.util.Map" resultType="java.util.Map">
+       SELECT 
+         IFNULL(a.id,"") AS id,
+         IFNULL(a.equipment_id,"") AS equipmentId,
+         IFNULL(a.telemetry_station_addr,"") AS telemetryStationAddr,
+         IFNULL(a.center_station_addr,"") AS centerStationAddr, 
+         IFNULL(a.valve1_status,"") AS valve1Status, 
+         IFNULL(a.valve2_status,"") AS valve2Status, 
+         IFNULL(a.water1_status,"") AS water1Status, 
+         IFNULL(a.water2_status,"") AS water2Status,
+         IFNULL(a.valve_signal_quality,"") AS valveSignalQuality, 
+         IFNULL(a.valve_voltage,"") AS valveVoltage,
+         IFNULL(a.update_time,null) AS updateTime, 
+         IFNULL(a.isonline,null) AS isonline,
+				IFNULL(eq.name,"") AS equipName,
+				IFNULL(eq.equipment_no,"") AS equipmentNo,
+				IFNULL(eq.office_id,"") AS officeid,
+				IFNULL(so.name,"") AS officeName,
+				IFNULL(eq.grouping_id,"") AS groupingid,
+				IFNULL(eg.name,"") AS groupName
+        FROM fkq_valve_info a
+				join equipment_info eq on a.equipment_id=eq.id
+				join sys_office so on so.id=eq.office_id
+				join equipment_grouping eg on eg.id=eq.grouping_id
+			WHERE
+        		1=1
+        		<if test="equipmentNo != null and equipmentNo != ''">
+                	and eq.equipment_no =#{equipmentNo}
+            	</if>
+            	<if test="equipName != null and equipName != ''">
+                	and eq.name =#{equipName}
+            	</if>
+				 <if test="startTime != null and startTime != '' ">
+               		 and <![CDATA[ a.update_time ='' >= #{startTime} ]]>
+           		 </if>
+           		 <if test="endTime != null and endTime != '' ">
+                	and <![CDATA[ a.update_time <= #{endTime} ]]>
+            	</if>
+			ORDER BY a.update_time desc limit 1
+    </select>
+    
+    <!-- app数据获取结束 -->
+<insert id="insertByValveInfoImport" parameterType="com.dyzhsw.efficient.entity.FkqValveInfo">
+       INSERT INTO fkq_valve_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="equipmentId != null">
+                equipment_id,
+            </if>
+            <if test="telemetryStationAddr != null">
+                telemetry_station_addr,
+            </if>
+            <if test="centerStationAddr != null">
+                center_station_addr,
+            </if>
+            <if test="valve1Status != null">
+                valve1_status,
+            </if>
+            <if test="valve2Status != null">
+                valve2_status,
+            </if>
+            <if test="water1Status != null">
+                water1_status,
+            </if>
+            <if test="water2Status != null">
+                water2_status,
+            </if>
+            <if test="valveSignalQuality != null">
+                valve_signal_quality,
+            </if>
+            <if test="valveVoltage != null">
+                valve_voltage,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isonline != null">
+                isonline,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="equipmentId != null">
+                #{equipmentId, jdbcType=VARCHAR},
+            </if>
+            <if test="telemetryStationAddr != null">
+                #{telemetryStationAddr, jdbcType=VARCHAR},
+            </if>
+            <if test="centerStationAddr != null">
+                #{centerStationAddr, jdbcType=VARCHAR},
+            </if>
+            <if test="valve1Status != null">
+                #{valve1Status, jdbcType=INTEGER},
+            </if>
+            <if test="valve2Status != null">
+                #{valve2Status, jdbcType=INTEGER},
+            </if>
+            <if test="water1Status != null">
+                #{water1Status, jdbcType=INTEGER},
+            </if>
+            <if test="water2Status != null">
+                #{water2Status, jdbcType=INTEGER},
+            </if>
+            <if test="valveSignalQuality != null">
+                #{valveSignalQuality, jdbcType=INTEGER},
+            </if>
+            <if test="valveVoltage != null">
+                #{valveVoltage, jdbcType=DOUBLE},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="isonline != null">
+                #{isonline, jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    
+    <select id="selectByOfficeId" resultType="com.dyzhsw.efficient.entity.FkqValveInfoVo">
+		SELECT 
+			IFNULL(a.id,"") AS id,
+			IFNULL(a.equipment_id,"") AS equipmentId,
+			IFNULL(eq.name,"") AS name,
+			IFNULL(a.telemetry_station_addr,"") AS telemetryStationAddr,
+			IFNULL(a.center_station_addr,"") AS centerStationAddr, 
+			IFNULL(a.valve1_status,"") AS valve1Status, 
+			IFNULL(a.valve2_status,"") AS valve2Status, 
+			IFNULL(a.water1_status,"") AS water1Status, 
+			IFNULL(a.water2_status,"") AS water2Status,
+			IFNULL(a.valve_signal_quality,"") AS valveSignalQuality, 
+			IFNULL(a.valve_voltage,"") AS valveVoltage,
+			IFNULL(a.update_time,null) AS updateTime, 
+			IFNULL(a.isonline,null) AS isonline,
+			IFNULL(eq.name,"") AS equipName,
+			IFNULL(eq.equipment_no,"") AS equipmentNo,
+			IFNULL(eq.office_id,"") AS officeid
+		FROM fkq_valve_info a
+		join equipment_info eq on a.equipment_id=eq.id
+		WHERE eq.office_id=#{officeId}
+    </select>
+</mapper>

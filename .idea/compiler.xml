@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="water-saving-app" />
+        <module name="water-saving-manager" />
+        <module name="water-saving-service" />
+        <module name="water-saving-show" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="water-saving-app" target="1.8" />
+      <module name="water-saving-manager" target="1.8" />
+      <module name="water-saving-parent" target="1.6" />
+      <module name="water-saving-service" target="1.8" />
+      <module name="water-saving-show" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

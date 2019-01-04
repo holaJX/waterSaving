@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.GsmMeterCumulativeWaterDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.GsmMeterCumulativeWater">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="terminal_time" jdbcType="TIMESTAMP" property="terminalTime" />
+        <result column="terminal_voltage" jdbcType="VARCHAR" property="terminalVoltage" />
+        <result column="csq" jdbcType="VARCHAR" property="csq" />
+        <result column="version" jdbcType="VARCHAR" property="version" />
+        <result column="address" jdbcType="TIMESTAMP" property="address" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />        
+        <result column="instantaneousflow" jdbcType="VARCHAR" property="instantaneousflow" />
+        <result column="cumulativeflow" jdbcType="VARCHAR" property="cumulativeflow" />
+        <result column="pressure" jdbcType="VARCHAR" property="pressure" />
+        <result column="copy_date" jdbcType="TIMESTAMP" property="copyDate" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, terminal_time, terminal_voltage, csq, version, address, create_time, update_time,
+        instantaneousflow, cumulativeflow, pressure,copy_date
+    </sql>
+
+
+    <insert id="addInfo" parameterType="com.dyzhsw.efficient.entity.GsmMeterCumulativeWater">
+        INSERT INTO gsm_meter_cumulative_water
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="terminalTime != null">
+                terminal_time,
+            </if>
+            <if test="terminalVoltage != null">
+                terminal_voltage,
+            </if>
+            <if test="csq != null">
+                csq,
+            </if>
+            <if test="version != null">
+                version,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="instantaneousflow != null">
+                instantaneousflow,
+            </if>
+            <if test="cumulativeflow != null">
+                cumulativeflow,
+            </if>
+            <if test="pressure != null">
+                pressure,
+            </if>           
+            <if test="copyDate != null">
+                copy_date,
+            </if>
+          
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR}
+            </if>
+            <if test="terminalTime != null">
+                #{terminalTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="terminalVoltage != null">
+                #{terminalVoltage, jdbcType=VARCHAR}
+            </if>
+            <if test="csq != null">
+                #{csq, jdbcType=VARCHAR}
+            </if>
+            <if test="version != null">
+                #{version, jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                #{address, jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                #{updateTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="instantaneousflow != null">
+                #{instantaneousflow, jdbcType=VARCHAR}
+            </if>
+            <if test="cumulativeflow != null">
+                #{cumulativeflow, jdbcType=VARCHAR}
+            </if>
+            <if test="pressure != null">
+                #{pressure, jdbcType=VARCHAR}
+            </if>
+            <if test="copyDate != null">
+                #{copyDate, jdbcType=TIMESTAMP}
+            </if>
+
+        </trim>
+    </insert>
+
+
+    <select id="selectWaterList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT 
+        max(cumulativeflow)-min(cumulativeflow) as waterSum,equ.name as address
+         FROM gsm_meter_cumulative_water water
+         left join equipment_info equ on equ.equipment_no = water.address
+         where water.copy_date in(start,end)
+         group by water.address
+    </select>
+    
+    
+	<!-- 移动端数据获取  lhl-->
+ 	<select id="getWaterListApp" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT 
+         a.id as id, 
+         a.terminal_voltage as voltage, 
+         a.csq as csq, 
+         a.address as equipmentNo, 
+         a.create_time as createtime, 
+         a.instantaneousflow as instantaneousflow, 
+         a.cumulativeflow as cumulativeflow, 
+         a.pressure as pressure, 
+         equ.name as equipName
+         FROM gsm_meter_cumulative_water a
+         left join equipment_info equ on equ.equipment_no = a.address      
+         <where>
+         1=1 
+         <if test="address!= null and address != '' ">
+  		       and a.address = #{address}
+  	     </if>
+  	     <if test="start != null and start != '' ">
+		 <![CDATA[
+			and a.create_time >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			and a.create_time <= #{end}
+		 ]]>		
+		</if>
+  	     </where>
+  	     order by a.create_time Desc   
+    </select>
+    
+    <select id="getWaternewdataApp" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT 
+         a.id as id, 
+         a.terminal_voltage as voltage, 
+         a.csq as csq, 
+         a.address as equipmentNo, 
+         a.create_time as createtime, 
+         a.instantaneousflow as instantaneousflow, 
+         a.cumulativeflow as cumulativeflow, 
+         a.pressure as pressure, 
+         equ.name as equipName
+         FROM gsm_meter_cumulative_water a
+         left join equipment_info equ on equ.equipment_no = a.address      
+         <where>
+         1=1 and a.address = #{address} 	   
+  	     </where>
+  	     order by a.create_time Desc limit 1   
+    </select>
+    
+     <select id="getWaterareadataApp"  resultType="java.util.Map">
+			    SELECT
+				so.id AS officeid,
+				so. NAME AS officname,
+				IFNULL(water.userwaternum,0) AS userwaternum
+			FROM
+				sys_office so
+			LEFT JOIN (
+			select officeid,officname,sum(userwaternum) AS userwaternum from (
+			SELECT
+				so.id AS officeid,
+				so.`name` AS officname,
+				a.equipment_no AS equipmentNo,
+				a.`name` AS equipName,
+				MAX(
+					CONVERT (
+						gs.cumulativeflow,
+						DECIMAL (10, 3)
+					)
+				) - MIN(
+					CONVERT (
+						gs.cumulativeflow,
+						DECIMAL (10, 3)
+					)
+				) AS userwaternum
+			FROM
+				equipment_info a
+			LEFT JOIN sys_office so ON a.office_id = so.id
+			LEFT JOIN gsm_meter_cumulative_water gs ON gs.address = a.equipment_no
+			WHERE
+				equipment_type = '4'
+			AND a.del_flag = 0
+			AND gs.cumulativeflow IS NOT NULL
+			GROUP BY
+				so.`name`,
+				a.equipment_no,
+				a.`name`,
+				so.id
+			ORDER BY
+				gs.create_time DESC
+			) as sumwater
+			GROUP BY
+				officeid,
+				officname
+			 ) as water on water.officeid=so.id
+			where so.type='3'
+     </select>
+     
+    <select id="selectWatercount" parameterType="java.util.Map" resultType="java.util.Map">
+      select  	so.id as officeid,
+				so.`name` as officname,
+				a.equipment_no as equipmentNo,
+				a.`name` as  equipName,			
+				MAX(CONVERT(gs.cumulativeflow, DECIMAL(10,3)))-MIN(CONVERT(gs.cumulativeflow, DECIMAL(10,3))) as userwaternum
+ 				from equipment_info  a
+				left join sys_office so on a.office_id=so.id
+				left join gsm_meter_cumulative_water gs on gs.address=a.equipment_no
+				where equipment_type='4' and a.del_flag=0 and gs.cumulativeflow is not null
+				 <if test="officeid != null and officeid != '' ">
+  		       			and so.id = #{officeid}
+		  	     </if>
+		  	     <if test="equipmentNo != null and equipmentNo != '' ">
+  		       			and a.equipment_no = #{equipmentNo}
+		  	     </if>
+		  	     <if test="start != null and start != '' ">
+				 <![CDATA[
+						and gs.create_time >= #{start}
+				 ]]>	
+				</if>
+				<if test="end != null and end != '' ">
+				<![CDATA[
+						and gs.create_time <= #{end}
+				 ]]>		
+				</if>
+				group by so.`name`,a.equipment_no,a.`name`,so.id
+				order by gs.create_time desc
+    </select>
+    
+    <!-- 移动端数据获取结束 --> 
+</mapper>

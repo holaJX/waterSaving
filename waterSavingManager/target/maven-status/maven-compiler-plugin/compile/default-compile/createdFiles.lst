@@ -1,0 +1,10 @@
+com\dyzhsw\efficient\app\controller\StatisticsController.class
+com\dyzhsw\efficient\Swagger2.class
+com\dyzhsw\efficient\ClientAdminApplicationManager.class
+com\dyzhsw\efficient\app\controller\ControlLogController.class
+com\dyzhsw\efficient\app\controller\SysController.class
+com\dyzhsw\efficient\app\controller\EquipmentTaskController.class
+com\dyzhsw\efficient\app\controller\WmTerminalinfoController.class
+com\dyzhsw\efficient\app\controller\LoginController.class
+com\dyzhsw\efficient\app\controller\EquipmentInfoController.class
+com\dyzhsw\efficient\app\controller\EquipmentGroupingController.class

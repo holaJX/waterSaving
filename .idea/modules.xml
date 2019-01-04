@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/waterSavingApp/water-saving-app.iml" filepath="$PROJECT_DIR$/waterSavingApp/water-saving-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/waterSavingManager/water-saving-manager.iml" filepath="$PROJECT_DIR$/waterSavingManager/water-saving-manager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/water-saving-parent.iml" filepath="$PROJECT_DIR$/water-saving-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/waterSavingService/water-saving-service.iml" filepath="$PROJECT_DIR$/waterSavingService/water-saving-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/waterSavingShow/water-saving-show.iml" filepath="$PROJECT_DIR$/waterSavingShow/water-saving-show.iml" />
+    </modules>
+  </component>
+</project>

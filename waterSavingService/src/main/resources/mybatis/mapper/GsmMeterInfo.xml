@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.GsmMeterInfoDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.GsmMeterInfo">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="terminal_datetime" jdbcType="TIMESTAMP" property="terminalDatetime" />
+        <result column="terminal_voltage" jdbcType="VARCHAR" property="terminalVoltage" />
+        <result column="csq" jdbcType="VARCHAR" property="csq" />
+        <result column="version" jdbcType="VARCHAR" property="version" />
+        <result column="address" jdbcType="VARCHAR" property="address" />
+        <result column="channel_id" jdbcType="VARCHAR" property="channelId" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="creator" jdbcType="VARCHAR" property="creator" />
+        <result column="isonline" jdbcType="VARCHAR" property="isonline" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, terminal_datetime, terminal_voltage, csq, version, address, channel_id, create_time,
+        update_time, creator, isonline
+    </sql>
+
+
+    <insert id="addGsmMeterInfo" parameterType="com.dyzhsw.efficient.entity.GsmMeterInfo">
+        INSERT INTO gsm_meter_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="terminalDatetime != null">
+                terminal_datetime,
+            </if>
+            <if test="terminalVoltage != null">
+                terminal_voltage,
+            </if>
+            <if test="csq != null">
+                csq,
+            </if>
+            <if test="version != null">
+                version,
+            </if>
+            <if test="address != null">
+                address,
+            </if>
+            <if test="channelId != null">
+                channel_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="creator != null">
+                creator,
+            </if>
+            <if test="isonline != null">
+                isonline,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="terminalDatetime != null">
+                #{terminalDatetime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="terminalVoltage != null">
+                #{terminalVoltage, jdbcType=VARCHAR},
+            </if>
+            <if test="csq != null">
+                #{csq, jdbcType=VARCHAR},
+            </if>
+            <if test="version != null">
+                #{version, jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                #{address, jdbcType=VARCHAR},
+            </if>
+            <if test="channelId != null">
+                #{channelId, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="creator != null">
+                #{creator, jdbcType=VARCHAR},
+            </if>
+            <if test="isonline != null">
+                #{isonline, jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+
+    <select id="selectByEquipmentNo" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.GsmMeterInfo">
+        SELECT <include refid="Base_Column_List"/>
+        FROM gsm_meter_info
+        WHERE address = #{equipmentNo, jdbcType=VARCHAR}
+    </select>
+
+</mapper>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.EquipmentLogDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.EquipmentLog">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="type" jdbcType="INTEGER" property="type" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="equipment_no" jdbcType="VARCHAR" property="equipment_no" />
+        <result column="equipment_name" jdbcType="VARCHAR" property="equipment_name" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+        <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, type, title, equipment_no, equipment_name, create_by, create_time, del_flag, remarks
+    </sql>
+    
+    <insert id="insertInfo" parameterType="com.dyzhsw.efficient.entity.EquipmentLog">
+        INSERT INTO equipment_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="title != null">
+                title,
+            </if>
+            <if test="equipmentNo != null">
+                equipment_no,
+            </if>
+            <if test="equipmentName != null">
+                equipment_name,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="remarks != null">
+                remarks,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                #{type, jdbcType=INTEGER},
+            </if>
+            <if test="title != null">
+                #{title, jdbcType=VARCHAR},
+            </if>
+            <if test="equipmentNo != null">
+                #{equipmentNo, jdbcType=VARCHAR},
+            </if>
+            <if test="equipmentName != null">
+                #{equipmentName, jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                #{createBy, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag, jdbcType=INTEGER},
+            </if>
+            <if test="remarks != null">
+                #{remarks, jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+</mapper>

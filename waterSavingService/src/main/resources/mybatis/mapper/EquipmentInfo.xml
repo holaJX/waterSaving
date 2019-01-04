@@ -1,0 +1,961 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.EquipmentInfoDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.EquipmentInfo">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
+        <result column="user_id" jdbcType="VARCHAR" property="userId" />
+        <result column="office_id" jdbcType="VARCHAR" property="officeId" />
+        <result column="area_id" jdbcType="VARCHAR" property="areaId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="equipment_no" jdbcType="VARCHAR" property="equipmentNo" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="isonline" jdbcType="INTEGER" property="isonline" />
+        <result column="pointlng" jdbcType="DECIMAL" property="pointlng" />
+        <result column="pointlat" jdbcType="DECIMAL" property="pointlat" />
+        <result column="equipment_type" jdbcType="INTEGER" property="equipmentType" />
+        <result column="iconurl" jdbcType="VARCHAR" property="iconurl" />
+        <result column="sort" jdbcType="DECIMAL" property="sort" />
+        <result column="grouping_id" jdbcType="VARCHAR" property="groupingId" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+        <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+        <result column="sign_label" jdbcType="VARCHAR" property="signLabel" />
+        <result column="equip_classify" jdbcType="INTEGER" property="equipClassify" />
+        <result column="max_value" jdbcType="VARCHAR" property="maxValue" />
+        <result column="min_value" jdbcType="VARCHAR" property="minValue" />
+        <result column="threshold_alarm_state" jdbcType="INTEGER" property="thresholdAlarmState" />
+        <result column="offline_alarm_state" jdbcType="INTEGER" property="offlineAlarmState" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, parent_id, user_id, office_id, area_id, name, equipment_no, password, isonline, pointlng, pointlat,
+        equipment_type, iconurl, sort, grouping_id, create_by, create_time, update_by, update_time, remarks, del_flag,
+        sign_label, equip_classify, max_value, min_value, threshold_alarm_state, offline_alarm_state
+    </sql>
+
+    <sql id="Base_Column_List1">
+        equ.id as 'id',
+        equ.parent_id as 'parentId',
+        equ.user_id as 'userId',
+        equ.office_id as 'officeId',
+        equ.area_id as 'areaId',
+        equ.name as 'name',
+        equ.equipment_no as 'equipmentNo',
+        equ.password as 'password',
+        equ.isonline as 'isonline',
+        equ.pointlng as 'pointlng',
+        equ.pointlat as 'pointlat',
+        equ.equipment_type as 'equipmentType',
+        equ.iconurl as 'iconurl',
+        equ.sort as 'sort',
+        equ.grouping_id as 'groupingId',
+        equ.create_by as 'createBy',
+        equ.create_time as 'createTime',
+        equ.update_by as 'updateBy',
+        equ.update_time as 'updateTime',
+        equ.remarks as 'remarks',
+        equ.del_flag as 'delFlag',
+        equ.sign_label as 'signLabel',
+        equ.equip_classify as 'equipClassify',
+        equ.max_value as 'maxValue',
+        equ.min_value as 'minValue',
+        equ.threshold_alarm_state as 'thresholdAlarmState',
+        equ.offline_alarm_state as 'offlineAlarmState',
+        office.name as 'officeName',
+        grouping.name as 'groupingName'
+    </sql>
+    
+    <sql id="Export_EquipmentInfo_List">
+        fkq.isonline as 'isonline',
+        equ.name as 'name',
+        office.name as 'officeName',
+        equ.equipment_no as 'equipmentNo',
+        grouping.name as 'groupingName',
+        fkq.valve1_status as 'valve1Status',
+        fkq.valve2_status as 'valve2Status'
+    </sql>
+    
+    <sql id="Export_Filter_List">
+        equ.name as 'name',
+        equ.equipment_no as 'equipmentNo',
+        office1.name as 'zoneName',
+        office2.name as 'regionName'
+    </sql>
+    
+    <sql id="Export_Manure_List">
+    	wm.isonline as 'isonline',
+        equ.name as 'name',
+        equ.equipment_no as 'equipmentNo',
+        office1.name as 'zoneName',
+        office2.name as 'regionName'
+    </sql>
+    
+    <sql id="Export_Collection_List">
+    	equ.id as 'id',
+    	meter.isonline as 'isonline',
+        equ.name as 'name',
+        equ.equipment_type as 'equipmentType',
+        equ.equipment_no as 'equipmentNo',
+        office1.name as 'zoneName',
+        office2.name as 'regionName',
+        equ.remarks as 'remarks'
+    </sql>
+    
+    <insert id="addEquipmentInfo" parameterType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        INSERT INTO equipment_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="officeId != null">
+                office_id,
+            </if>
+            <if test="areaId != null">
+                area_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="equipmentNo != null">
+                equipment_no,
+            </if>
+            <if test="isonline != null">
+                isonline,
+            </if>
+            <if test="pointlng != null">
+                pointlng,
+            </if>
+            <if test="pointlat != null">
+                pointlat,
+            </if>
+            <if test="equipmentType != null">
+                equipment_type,
+            </if>
+            <if test="iconurl != null">
+                iconurl,
+            </if>
+            <if test="sort != null">
+                sort,
+            </if>
+            <if test="groupingId != null">
+                grouping_id,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remarks != null">
+                remarks,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="signLabel != null">
+                sign_label,
+            </if>
+            <if test="equipClassify != null">
+                equip_classify,
+            </if>
+            <if test="maxValue != null">
+                max_value,
+            </if>
+            <if test="minValue != null">
+                min_value,
+            </if>
+            <if test="thresholdAlarmState != null">
+                threshold_alarm_state,
+            </if>
+            <if test="offlineAlarmState != null">
+                offline_alarm_state,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null">
+                #{parentId, jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                #{userId, jdbcType=VARCHAR},
+            </if>
+            <if test="officeId != null">
+                #{officeId, jdbcType=VARCHAR},
+            </if>
+            <if test="areaId != null">
+                #{areaId, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="equipmentNo != null">
+                #{equipmentNo, jdbcType=VARCHAR},
+            </if>
+            <if test="isonline != null">
+                #{isonline, jdbcType=INTEGER},
+            </if>
+            <if test="pointlng != null">
+                #{pointlng, jdbcType=DECIMAL},
+            </if>
+            <if test="pointlat != null">
+                #{pointlat, jdbcType=DECIMAL},
+            </if>
+            <if test="equipmentType != null">
+                #{equipmentType, jdbcType=INTEGER},
+            </if>
+            <if test="iconurl != null">
+                #{iconurl, jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null">
+                #{sort, jdbcType=DECIMAL},
+            </if>
+            <if test="groupingId != null">
+                #{groupingId, jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                #{createBy, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy, jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="remarks != null">
+                #{remarks, jdbcType=VARCHAR},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag, jdbcType=INTEGER},
+            </if>
+            <if test="signLabel != null">
+                #{signLabel, jdbcType=VARCHAR},
+            </if>
+            <if test="equipClassify != null">
+                #{equipClassify, jdbcType=INTEGER},
+            </if>
+            <if test="maxValue != null">
+                #{maxValue, jdbcType=VARCHAR},
+            </if>
+            <if test="minValue != null">
+                #{minValue, jdbcType=VARCHAR},
+            </if>
+            <if test="thresholdAlarmState != null">
+                #{thresholdAlarmState, jdbcType=INTEGER},
+            </if>
+            <if test="offlineAlarmState != null">
+                #{offlineAlarmState, jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+
+
+    <update id="updateEquipmentInfo" parameterType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        update equipment_info
+        <set>
+            <if test="parentId != null">
+                parent_id = #{parentId, jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId, jdbcType=VARCHAR},
+            </if>
+            <if test="officeId != null">
+                office_id = #{officeId, jdbcType=VARCHAR},
+            </if>
+            <if test="areaId != null">
+                area_id = #{areaId, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="equipmentNo != null">
+                equipment_no = #{equipmentNo, jdbcType=VARCHAR},
+            </if>
+            <if test="isonline != null">
+                isonline = #{isonline, jdbcType=INTEGER},
+            </if>
+            <if test="pointlng != null">
+                pointlng = #{pointlng, jdbcType=DECIMAL},
+            </if>
+            <if test="pointlat != null">
+                pointlat = #{pointlat, jdbcType=DECIMAL},
+            </if>
+            <if test="equipmentType != null">
+                equipment_type = #{equipmentType, jdbcType=INTEGER},
+            </if>
+            <if test="iconurl != null">
+                iconurl = #{iconurl, jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null">
+                sort = #{sort, jdbcType=DECIMAL},
+            </if>
+            <if test="groupingId != null">
+                grouping_id = #{groupingId, jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy, jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks, jdbcType=VARCHAR},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag, jdbcType=INTEGER},
+            </if>
+            <if test="signLabel != null">
+                sign_label = #{signLabel, jdbcType=VARCHAR},
+            </if>
+            <if test="equipClassify != null">
+                equip_classify = #{equipClassify, jdbcType=INTEGER},
+            </if>
+            <if test="maxValue != null">
+                max_value = #{maxValue, jdbcType=VARCHAR},
+            </if>
+            <if test="minValue != null">
+                min_value = #{minValue, jdbcType=VARCHAR},
+            </if>
+            <if test="thresholdAlarmState != null">
+                threshold_alarm_state = #{thresholdAlarmState, jdbcType=INTEGER},
+            </if>
+            <if test="offlineAlarmState != null">
+                offline_alarm_state = #{offlineAlarmState, jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+
+    <select id="getEquipmentListByEquTypeAndOfficeId" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List"/>
+        FROM equipment_info
+        WHERE office_id = #{officeId, jdbcType=VARCHAR}
+        AND equipment_type = #{equType, jdbcType=INTEGER}
+        AND del_flag = 0
+        ORDER BY create_time DESC
+    </select>
+    
+    <select id="getValveList" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List"/>
+        FROM equipment_info
+        WHERE  equipment_type = #{equType, jdbcType=INTEGER}
+        AND del_flag = 0
+        ORDER BY create_time DESC
+    </select>
+    
+    <select id="getEquListByOfficeId" resultType="java.util.Map" parameterType ="java.util.Map">
+        SELECT 
+        equ.id as id,
+        concat(grouping.name,"-",equ.name) as name,
+        equ.equipment_no as equipmentNo
+        FROM equipment_info equ
+        right join equipment_grouping grouping on grouping.id = equ.grouping_id
+       
+          WHERE  grouping.office_id = #{officeId, jdbcType=VARCHAR}
+                 AND equ.del_flag = 0 
+                 AND equ.equipment_type = #{type}
+        ORDER BY grouping.office_id,grouping.sort
+    </select>
+
+
+    <select id="getCollectEquipmentListByOfficeId" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List"/>
+        FROM equipment_info
+        WHERE office_id = #{officeId, jdbcType=VARCHAR}
+        AND (equipment_type = 4 OR equipment_type = 5)
+        AND del_flag = 0
+        ORDER BY create_time DESC
+    </select>
+
+
+
+    <select id="getEquipmentInfoById" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List1"/>
+        FROM equipment_info equ
+        LEFT JOIN sys_office office ON office.id = equ.office_id
+        LEFT JOIN equipment_grouping grouping ON grouping.id = equ.grouping_id
+        WHERE equ.id = #{id, jdbcType=VARCHAR} AND equ.del_flag = 0
+    </select>
+    
+    <select id="getEquipmentInfoByEquNo" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List1"/>
+        FROM equipment_info equ
+        LEFT JOIN sys_office office ON office.id = equ.office_id
+        LEFT JOIN equipment_grouping grouping ON grouping.id = equ.grouping_id
+        WHERE equ.equipment_no = #{equipmentNo, jdbcType=VARCHAR} AND equ.del_flag = 0
+    </select>
+    
+    <select id="getFkq"  resultType="java.util.Map">
+        SELECT e.id as id ,e.name as name
+        FROM equipment_info e
+         left join sys_office off on off.id = e.office_id
+        WHERE e.equipment_type = 4 AND e.del_flag = 0
+        order by off.type
+    </select>
+    
+    <select id="getWm"  resultType="java.util.Map" >
+       SELECT e.id as id ,e.name as name,e.equipment_no as equipmentNo
+        FROM equipment_info e
+        where
+          e.equipment_type = 1 AND e.del_flag = 0    
+    </select>
+    
+    <select id="getWmByOfficeId"  resultType="java.util.Map" parameterType ="java.lang.String">
+       SELECT e.id as id ,e.name as name,e.equipment_no as equipmentNo
+        FROM equipment_info e
+        where
+          e.equipment_type = 1 AND e.del_flag = 0
+		  and e.office_id = #{officeId, jdbcType=VARCHAR}       
+    </select>
+
+
+    <select id="getEquipmentInfoByIdAndType" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List1"/>
+        FROM equipment_info equ
+        LEFT JOIN sys_office office ON office.id = equ.office_id
+        LEFT JOIN equipment_grouping grouping ON grouping.id = equ.grouping_id
+        WHERE equ.id = #{id, jdbcType=VARCHAR} AND equ.equipment_type = #{equType, jdbcType=INTEGER} AND equ.del_flag = 0
+    </select>
+
+
+    <update id="updateGroupId" parameterType="java.lang.String">
+        UPDATE equipment_info
+        SET grouping_id = NULL , update_by = #{currUserId, jdbcType=VARCHAR}, update_time = now()
+        WHERE grouping_id = #{groupId, jdbcType=VARCHAR}
+    </update>
+
+
+    <update id="updateGroupIdById" parameterType="java.lang.String">
+        UPDATE equipment_info
+        SET grouping_id = NULL , update_by = #{currUserId, jdbcType=VARCHAR}, update_time = now()
+        WHERE id = #{id, jdbcType=VARCHAR}
+    </update>
+
+
+    <select id="getEquipmentListByOfficeId" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List"/>
+        FROM equipment_info
+        WHERE office_id = #{officeId, jdbcType=VARCHAR}
+        AND del_flag = 0
+        ORDER BY create_time DESC
+    </select>
+    
+    <select id="selectNotIn" resultMap="BaseResultMap"
+		resultType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from equipment_info
+		
+	<where>
+		
+	 <if test="type!= null and type != '' ">
+  		      equipment_type = #{type}  
+  	 </if> 
+		and id not in
+     <foreach collection="taskList" index="index" item="taskList" open="(" separator="," close=")">
+       #{taskList}        
+     </foreach> 
+        <if test="officeId!= null and officeId != '' ">
+  		       and office_id = #{officeId}  
+  	    </if> 
+
+     </where> 
+	</select>
+
+    <select id="selectEquipmentByMap" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List"/>
+        FROM equipment_info
+        WHERE
+         del_flag = 0
+        <if test="officeId!= null and officeId != '' ">
+            and  office_id IN ( SELECT id
+            FROM sys_office
+            WHERE id=#{officeId} OR parent_ids LIKE CONCAT(CONCAT('%', #{officeId}), '%')
+            AND del_flag = 0)
+        </if>
+        <if test="type!= null and type != '' ">
+          AND  equipment_type = #{type}
+        </if>
+        <if test="name != null and name != '' ">
+            AND LOCATE(#{name},'name')>0
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+
+    <update id="deletedEquipmentInfoById" parameterType="java.lang.String">
+        UPDATE equipment_info
+        SET del_flag = 1, update_by = #{currUserId, jdbcType=VARCHAR}, update_time = now()
+        WHERE id = #{id, jdbcType=VARCHAR}
+    </update>
+
+    <select id="getFkqListByCondition" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List1"/>
+        FROM equipment_info equ
+        LEFT JOIN sys_office office ON office.id = equ.office_id
+        LEFT JOIN equipment_grouping grouping ON grouping.id = equ.grouping_id
+        LEFT JOIN fkq_valve_info fkq ON fkq.equipment_id = equ.id
+        WHERE equ.del_flag = 0
+        <if test="name != null and name != '' ">
+            AND LOCATE(#{name},equ.name)>0
+        </if>
+        <if test="equType != null">
+            AND equ.equipment_type = #{equType, jdbcType=INTEGER}
+        </if>
+        <if test="equipmentNo != null and equipmentNo != '' ">
+            AND LOCATE(#{equipmentNo},equ.equipment_no)>0
+        </if>
+        <if test="groupId != null and groupId != '' ">
+            AND equ.grouping_id = #{groupId, jdbcType=VARCHAR}
+        </if>
+        <if test="isonline != null">
+            and fkq.isonline = #{isonline, jdbcType=INTEGER}
+        </if>
+        <if test="officeIdList != null">
+            AND equ.office_id IN
+            <foreach collection="officeIdList" index="index" item="officeId" open="(" separator="," close=")">
+                #{officeId}
+            </foreach>
+        </if>
+        ORDER BY equ.create_time DESC
+    </select>
+
+
+    <select id="getSfjListByCondition" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List1"/>
+        FROM equipment_info equ
+        LEFT JOIN sys_office office ON office.id = equ.office_id
+        LEFT JOIN equipment_grouping grouping ON grouping.id = equ.grouping_id
+        LEFT JOIN wm_terminalinfo wm ON wm.terminal_id = equ.equipment_no
+        WHERE equ.del_flag = 0
+        <if test="name != null and name != '' ">
+            AND LOCATE(#{name},equ.name)>0
+        </if>
+        <if test="equType != null">
+            AND equ.equipment_type = #{equType, jdbcType=INTEGER}
+        </if>
+        <if test="equipmentNo != null and equipmentNo != '' ">
+            AND LOCATE(#{equipmentNo},equ.equipment_no)>0
+        </if>
+        <if test="groupId != null and groupId != '' ">
+            AND equ.grouping_id = #{groupId, jdbcType=VARCHAR}
+        </if>
+        <if test="isonline != null">
+            and wm.isonline = #{isonline, jdbcType=INTEGER}
+        </if>
+        <if test="officeIdList != null">
+            AND equ.office_id IN
+            <foreach collection="officeIdList" index="index" item="officeId" open="(" separator="," close=")">
+                #{officeId}
+            </foreach>
+        </if>
+        ORDER BY equ.create_time DESC
+    </select>
+
+
+    <select id="getGlqListByCondition" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List1"/>
+        FROM equipment_info equ
+        LEFT JOIN sys_office office ON office.id = equ.office_id
+        LEFT JOIN equipment_grouping grouping ON grouping.id = equ.grouping_id
+        WHERE equ.del_flag = 0
+        <if test="name != null and name != '' ">
+            AND LOCATE(#{name},equ.name)>0
+        </if>
+        <if test="equType != null">
+            AND equ.equipment_type = #{equType, jdbcType=INTEGER}
+        </if>
+        <if test="equipmentNo != null and equipmentNo != '' ">
+            AND LOCATE(#{equipmentNo},equ.equipment_no)>0
+        </if>
+        <if test="groupId != null and groupId != '' ">
+            AND equ.grouping_id = #{groupId, jdbcType=VARCHAR}
+        </if>
+        <if test="officeIdList != null">
+            AND equ.office_id IN
+            <foreach collection="officeIdList" index="index" item="officeId" open="(" separator="," close=")">
+                #{officeId}
+            </foreach>
+        </if>
+        ORDER BY equ.create_time DESC
+    </select>
+
+    <select id="getCollectEquipmentListByConditions" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List1"/>
+        FROM equipment_info equ
+        LEFT JOIN sys_office office ON office.id = equ.office_id
+        LEFT JOIN equipment_grouping grouping ON grouping.id = equ.grouping_id
+        LEFT JOIN gsm_meter_info meter ON meter.address = equ.equipment_no
+        WHERE equ.del_flag = 0
+        <if test="name != null and name != '' ">
+            AND LOCATE(#{name},equ.name)>0
+        </if>
+        <if test="equipmentNo != null and equipmentNo != '' ">
+            AND LOCATE(#{equipmentNo},equ.equipment_no)>0
+        </if>
+        <if test="isonline != null and isonline != '' ">
+            and meter.isonline = #{isonline, jdbcType=INTEGER}
+        </if>
+        <if test="officeIdList != null">
+            AND equ.office_id IN
+            <foreach collection="officeIdList" index="index" item="officeId" open="(" separator="," close=")">
+                #{officeId}
+            </foreach>
+        </if>
+        AND (equ.equipment_type = 4 OR equ.equipment_type = 5)
+        ORDER BY equ.create_time DESC
+    </select>
+
+    <select id="getEquipmentListByGroupId" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List"/>
+        FROM equipment_info
+        WHERE del_flag = 0
+        AND grouping_id = #{groupId, jdbcType=VARCHAR}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="getOptionalEquByGroupId" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List"/>
+        FROM equipment_info
+        WHERE del_flag = 0
+        AND equipment_type = 3
+        AND (grouping_id IS NULL OR grouping_id = '')
+        AND office_id = #{officeId, jdbcType=VARCHAR}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectByEquNo" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List"/>
+        FROM equipment_info
+        WHERE equipment_no = #{equNo, jdbcType=VARCHAR}
+    </select>
+
+    <update id="updateOfficeId" parameterType="java.lang.String">
+        UPDATE equipment_info
+        SET office_id = '', update_by = #{currUserId, jdbcType=VARCHAR}, update_time = now()
+        WHERE office_id = #{officeId, jdbcType=VARCHAR}
+    </update>
+
+    <update id="emptyGroupId">
+        UPDATE equipment_info
+        SET grouping_id = '', update_by = #{currUserId, jdbcType=VARCHAR}, update_time = now()
+        WHERE grouping_id IN
+        <foreach collection="groupIdList" index="index" item="groupId" open="(" separator="," close=")">
+            #{groupId}
+        </foreach>
+    </update>
+    
+    <select id="StringNoById" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT equipment_no
+        FROM equipment_info
+        WHERE id = #{id, jdbcType=VARCHAR}
+    </select>
+
+    <select id="getEquipmentListByEquName" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        SELECT <include refid="Base_Column_List"/>
+        FROM equipment_info
+        WHERE del_flag = 0 AND name LIKE CONCAT(CONCAT('%', #{equipmentName}), '%')
+        ORDER BY create_time DESC
+    </select>
+    
+    <select id="getEquipmentInfoFilterExport" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+		select
+		<include refid="Export_Filter_List" />
+		from equipment_info equ
+		left join sys_office office1 on
+		equ.office_id = office1.id
+		left join sys_office office2 on
+		office1.parent_id = office2.id	
+	<where>
+		equ.del_flag = 0 and equ.equipment_type = 2
+		<if test="name != null and name != '' ">
+			and LOCATE(#{name},equ.name)>0
+		</if>
+		<if test="equipmentNo != null">
+			and LOCATE(#{equipmentNo},equ.equipment_no)>0
+		</if>
+		<if test="officeId != null and officeId != '' ">
+			and equ.office_id = #{officeId, jdbcType=VARCHAR}
+		</if>
+	</where>
+	order by equ.create_time desc
+</select>
+
+<select id="getManureExport" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+		select
+		<include refid="Export_Manure_List" />
+		from equipment_info equ
+		left join sys_office office1 on
+		equ.office_id = office1.id
+		left join sys_office office2 on
+		office1.parent_id = office2.id
+		left join wm_terminalinfo wm on
+		equ.equipment_no = wm.terminal_id	
+	<where>
+		equ.del_flag = 0 and equ.equipment_type = 1
+		<if test="name != null and name != '' ">
+			and LOCATE(#{name},equ.name)>0
+		</if>
+		<if test="equipmentNo != null">
+			and LOCATE(#{equipmentNo},equ.equipment_no)>0
+		</if>
+		<if test="officeId != null and officeId != '' ">
+			and equ.office_id = #{officeId, jdbcType=VARCHAR}
+		</if>
+		<if test="isonline != null and isonline != '' ">
+			and wm.isonline = #{isonline, jdbcType=INTEGER}
+		</if>
+	</where>
+	order by equ.create_time desc
+</select>
+
+<select id="getCollectionExport" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+		select
+		<include refid="Export_Collection_List" />
+		from equipment_info equ
+		left join sys_office office1 on
+		equ.office_id = office1.id
+		left join sys_office office2 on
+		office1.parent_id = office2.id
+		left join gsm_meter_info meter on
+		equ.equipment_no = meter.address	
+	<where>
+		equ.del_flag = 0 and (equ.equipment_type = 4 or equ.equipment_type = 5)
+		<if test="name != null and name != '' ">
+			and LOCATE(#{name},equ.name)>0
+		</if>
+		<if test="equipmentNo != null">
+			and LOCATE(#{equipmentNo},equ.equipment_no)>0
+		</if>
+		<if test="officeId != null and officeId != '' ">
+			and equ.office_id = #{officeId, jdbcType=VARCHAR}
+		</if>
+		<if test="isonline != null and isonline != '' ">
+			and meter.isonline = #{isonline, jdbcType=INTEGER}
+		</if>
+	</where>
+	order by equ.create_time desc
+</select>
+
+<select id="getEquipmentInfoExport" resultType="com.dyzhsw.efficient.entity.EquipmentInfo">
+		select
+		<include refid="Export_EquipmentInfo_List" />
+		from equipment_info equ
+		left join equipment_grouping grouping on
+		equ.grouping_id = grouping.id
+		left join fkq_valve_info fkq on 
+		equ.id = fkq.equipment_id
+		left join sys_office office on 
+		equ.office_id = office.id
+	<where>
+		equ.del_flag = 0 and (equ.equipment_type = 3 )
+		<if test="name != null and name != '' ">
+			and LOCATE(#{name},equ.name)>0
+		</if>
+		<if test="equipmentNo != null">
+			and LOCATE(#{equipmentNo},equ.equipment_no)>0
+		</if>
+		<if test="groupId != null and groupId != '' ">
+			and equ.grouping_id= #{groupId, jdbcType=VARCHAR}
+		</if>
+		<if test="officeId != null and officeId != '' ">
+			and equ.office_id = #{officeId, jdbcType=VARCHAR}
+		</if>
+		<if test="isonline != null">
+			and fkq.isonline = #{isonline, jdbcType=INTEGER}
+		</if>
+	</where>
+	order by equ.create_time desc
+</select>
+
+<insert id="insertValveImport" parameterType="com.dyzhsw.efficient.entity.EquipmentInfo">
+        INSERT INTO equipment_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="officeId != null">
+                office_id,
+            </if>
+            <if test="areaId != null">
+                area_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="equipmentNo != null">
+                equipment_no,
+            </if>
+            <if test="isonline != null">
+                isonline,
+            </if>
+            <if test="pointlng != null">
+                pointlng,
+            </if>
+            <if test="pointlat != null">
+                pointlat,
+            </if>
+            <if test="equipmentType != null">
+                equipment_type,
+            </if>
+            <if test="iconurl != null">
+                iconurl,
+            </if>
+            <if test="sort != null">
+                sort,
+            </if>
+            <if test="groupingId != null">
+                grouping_id,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remarks != null">
+                remarks,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="signLabel != null">
+                sign_label,
+            </if>
+            <if test="equipClassify != null">
+                equip_classify,
+            </if>
+            <if test="maxValue != null">
+                max_value,
+            </if>
+            <if test="minValue != null">
+                min_value,
+            </if>
+            <if test="thresholdAlarmState != null">
+                threshold_alarm_state,
+            </if>
+            <if test="offlineAlarmState != null">
+                offline_alarm_state,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null">
+                #{parentId, jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                #{userId, jdbcType=VARCHAR},
+            </if>
+            <if test="officeId != null">
+                #{officeId, jdbcType=VARCHAR},
+            </if>
+            <if test="areaId != null">
+                #{areaId, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="equipmentNo != null">
+                #{equipmentNo, jdbcType=VARCHAR},
+            </if>
+            <if test="isonline != null">
+                #{isonline, jdbcType=INTEGER},
+            </if>
+            <if test="pointlng != null">
+                #{pointlng, jdbcType=DECIMAL},
+            </if>
+            <if test="pointlat != null">
+                #{pointlat, jdbcType=DECIMAL},
+            </if>
+            <if test="equipmentType != null">
+                #{equipmentType, jdbcType=INTEGER},
+            </if>
+            <if test="iconurl != null">
+                #{iconurl, jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null">
+                #{sort, jdbcType=DECIMAL},
+            </if>
+            <if test="groupingId != null">
+                #{groupingId, jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                #{createBy, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy, jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="remarks != null">
+                #{remarks, jdbcType=VARCHAR},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag, jdbcType=INTEGER},
+            </if>
+            <if test="signLabel != null">
+                #{signLabel, jdbcType=VARCHAR},
+            </if>
+            <if test="equipClassify != null">
+                #{equipClassify, jdbcType=INTEGER},
+            </if>
+            <if test="maxValue != null">
+                #{maxValue, jdbcType=VARCHAR},
+            </if>
+            <if test="minValue != null">
+                #{minValue, jdbcType=VARCHAR},
+            </if>
+            <if test="thresholdAlarmState != null">
+                #{thresholdAlarmState, jdbcType=INTEGER},
+            </if>
+            <if test="offlineAlarmState != null">
+                #{offlineAlarmState, jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+</mapper>

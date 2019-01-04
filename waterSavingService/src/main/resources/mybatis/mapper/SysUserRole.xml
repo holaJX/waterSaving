@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.SysUserRoleDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.SysUserRole">
+        <result column="user_id" jdbcType="VARCHAR" property="userId" />
+        <result column="role_id" jdbcType="VARCHAR" property="roleId" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_id, role_id
+    </sql>
+
+
+    <insert id="addUserRole" parameterType="com.dyzhsw.efficient.entity.SysUserRole">
+        INSERT INTO sys_user_role (user_id, role_id) VALUE (#{userId, jdbcType=VARCHAR}, #{roleId, jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="deletedByUserId" parameterType="java.lang.String">
+        DELETE FROM sys_user_role WHERE user_id = #{userId, jdbcType=VARCHAR};
+    </delete>
+
+    <delete id="deletedByRoleId" parameterType="java.lang.String">
+        DELETE FROM sys_user_role WHERE role_id = #{roleId, jdbcType=VARCHAR};
+    </delete>
+
+    <select id="selectRoleIdByUserId" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT role_id FROM sys_user_role
+        WHERE user_id = #{userId, jdbcType=VARCHAR};
+    </select>
+
+    <select id="selectByUserRole" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysUserRole">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_user_role WHERE user_id = #{userId, jdbcType=VARCHAR}
+    </select>
+
+    <update id="updateRoleIdByUserId" parameterType="com.dyzhsw.efficient.entity.SysUserRole">
+        UPDATE sys_user_role SET role_id = #{roleId, jdbcType=VARCHAR} WHERE user_id = #{userId, jdbcType=VARCHAR}
+    </update>
+
+    <select id="selectUserIdByRoleId" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT user_id FROM sys_user_role
+        WHERE role_id = #{roleId, jdbcType=VARCHAR}
+    </select>
+
+</mapper>

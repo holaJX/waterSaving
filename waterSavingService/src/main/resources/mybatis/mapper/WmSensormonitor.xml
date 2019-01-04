@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.WmSensormonitorDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.WmSensormonitor">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="msg_id" jdbcType="VARCHAR" property="msgId" />
+        <result column="terminal_id" jdbcType="VARCHAR" property="terminalId" />
+        <result column="serial_no_server" jdbcType="INTEGER" property="serialNoServer" />
+        <result column="serial_no_terminal" jdbcType="INTEGER" property="serialNoTerminal" />
+        <result column="collect_date" jdbcType="TIMESTAMP" property="collectDate" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="amount" jdbcType="DECIMAL" property="amount" />
+        <result column="state" jdbcType="INTEGER" property="state" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, msg_id, terminal_id, serial_no_server, serial_no_terminal, collect_date, name, amount, state, create_time, update_time
+    </sql>
+
+
+
+    <select id="selectGraphByEquNo" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.WmSensormonitor">
+        SELECT <include refid="Base_Column_List"/>
+        FROM wm_sensormonitor
+        WHERE terminal_id = #{equNo, jdbcType=VARCHAR}
+        AND <![CDATA[ DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= create_time ]]>
+        AND state = 0
+        ORDER BY create_time DESC limit 500
+    </select>
+
+    <select id="selectByEquNo" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.WmSensormonitor">
+        SELECT <include refid="Base_Column_List"/>
+        FROM wm_sensormonitor
+        WHERE terminal_id = #{equNo, jdbcType=VARCHAR}
+        AND state = 0
+        order by create_time DESC
+    </select>
+
+
+</mapper>

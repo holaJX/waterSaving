@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.EquipmentWarnDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.EquipmentWarn">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="warn_type" jdbcType="INTEGER" property="warnType" />
+        <result column="warn_info" jdbcType="VARCHAR" property="warnInfo" />
+        <result column="equipment_no" jdbcType="VARCHAR" property="equipmentNo" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+        <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+        <result column="equipment_type" jdbcType="INTEGER" property="equipmentType" />
+        <result column="copy_date" jdbcType="DATE" property="copyDate" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        a.id AS "id", 
+        a.warn_type "warnType",
+        a.warn_info "warnInfo", 
+        a.equipment_no "equipmentNo", 
+        a.create_by "createBy", 
+        a.create_time "createTime", 
+        a.remarks "remarks", 
+        a.del_flag "delFlag", 
+        a.equipment_type "equipmentType", 
+        a.copy_date "copyDate", 
+        a.update_time  "updateTime",
+        eq.name AS "equipmentInfo.name"
+    </sql>
+    
+
+    <sql id="Base_Column_List1">
+        id, warn_type, warn_info, equipment_no, create_by, create_time, remarks, del_flag, equipment_type, copy_date, update_time
+    </sql>
+
+    <sql id="Base_Column_List2">
+        a.id as 'id',
+        a.warn_type as 'warnType',
+        a.warn_info as 'warnInfo',
+        a.equipment_no as 'equipmentNo',
+        a.create_by as 'createBy',
+        a.create_time as 'createTime',
+        a.remarks as 'remarks',
+        a.del_flag as 'delFlag',
+        a.equipment_type as 'equipmentType',
+        a.copy_date as 'copyDate',
+        a.update_time as 'updateTime',
+        eq.name as 'equipmentInfo.name',
+        eq.pointlng as 'equipmentInfo.pointlng',
+        eq.pointlat as 'equipmentInfo.pointlat'
+    </sql>
+	
+	<sql id="allequipmentJoins">
+		LEFT JOIN equipment_info eq ON eq.equipment_no = a.equipment_no					
+	</sql>
+	 <select id="selectAll"  resultType="com.dyzhsw.efficient.entity.EquipmentWarn">
+        SELECT 
+         <include refid="Base_Column_List"/>
+        FROM equipment_warn a
+        <include refid="allequipmentJoins"/>        
+       <where>
+  	  		1=1
+  	   <if test="equipmentInfo != null and equipmentInfo.name != null and equipmentInfo.name != '' ">
+  		       and eq.name like concat(#{equipmentInfo.name},'%') 
+  	   </if>
+  	   <if test="equipmentNo != null and equipmentNo != '' ">
+  		       and a.equipment_no like concat(#{equipmentNo},'%') 
+  	   </if>
+  	    <if test="warnType != null and warnType != '' ">
+  		       and a.warn_type = #{warnType}
+  	   </if>
+       </where>
+       	order by a.create_time DESC
+    </select>
+
+
+    <select id="getEquWarnInfoListByEquNo" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.EquipmentWarn">
+        SELECT <include refid="Base_Column_List1"/>
+        FROM equipment_warn
+        WHERE equipment_no = #{equipmentNo, jdbcType=VARCHAR}
+        AND del_flag = 0
+        ORDER BY create_time DESC
+    </select>
+
+
+    <select id="getEquWarnInfoListByConditions" resultType="com.dyzhsw.efficient.entity.EquipmentWarn">
+        SELECT <include refid="Base_Column_List"/>
+        FROM equipment_warn a
+        LEFT JOIN equipment_info eq ON eq.equipment_no = a.equipment_no
+        <where>
+            1=1
+            <if test=" equType != null">
+                and a.equipment_type = #{equType}
+            </if>
+            <if test="warnType != null">
+                and a.warn_type = #{warnType}
+            </if>
+            <if test="warnInfo != null and warnInfo != '' ">
+                and a.warn_info LIKE CONCAT(CONCAT('%', #{warnInfo}), '%')
+            </if>
+            <if test="remarks != null and remarks != '' ">
+                and a.remarks LIKE CONCAT(CONCAT('%', #{remarks}), '%')
+            </if>
+            <if test="startTime != null and startTime != '' ">
+                and <![CDATA[ a.create_time >= #{startTime} ]]>
+            </if>
+            <if test="endTime != null and endTime != '' ">
+                and <![CDATA[ a.create_time <= #{endTime} ]]>
+            </if>
+        </where>
+        AND a.del_flag = 0 ORDER BY a.create_time DESC
+    </select>
+
+    <update id="deletedById" parameterType="java.lang.String">
+        UPDATE equipment_warn SET del_flag = 1 WHERE id = #{id, jdbcType=VARCHAR}
+    </update>
+
+    <select id="getWarnNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT ifnull(count(id),0)
+        FROM equipment_warn
+        WHERE del_flag = 0
+        and <![CDATA[ create_time > #{beforeWarnTime} ]]>
+    </select>
+	
+<select id="getEquipmentWarnExport" resultType="com.dyzhsw.efficient.entity.EquipmentWarn">
+	select
+	<include refid="Base_Column_List2" />
+	from equipment_warn a
+	LEFT JOIN equipment_info eq ON eq.equipment_no =
+	a.equipment_no
+	<where>
+		a.del_flag = 0
+		<if test=" equType != null">
+             and a.equipment_type = #{equType}
+         </if>
+         <if test="warnType != null">
+             and a.warn_type = #{warnType}
+         </if>
+         <if test="warnInfo != null and warnInfo != '' ">
+             and a.warn_info LIKE CONCAT(CONCAT('%', #{warnInfo}), '%')
+         </if>
+         <if test="remarks != null and remarks != '' ">
+             and a.remarks LIKE CONCAT(CONCAT('%', #{remarks}), '%')
+         </if>
+         <if test="startTime != null and startTime != '' ">
+             and <![CDATA[ a.create_time >= #{startTime} ]]>
+         </if>
+         <if test="endTime != null and endTime != '' ">
+             and <![CDATA[ a.create_time <= #{endTime} ]]>
+         </if>
+	</where>
+	ORDER BY a.create_time DESC 
+	limit 0, 200
+</select>
+
+</mapper>

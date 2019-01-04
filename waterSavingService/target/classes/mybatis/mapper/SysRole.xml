@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.SysRoleDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.SysRole">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="office_id" jdbcType="VARCHAR" property="officeId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="enname" jdbcType="VARCHAR" property="enname" />
+        <result column="role_type" jdbcType="VARCHAR" property="roleType" />
+        <result column="data_scope" jdbcType="VARCHAR" property="dataScope" />
+        <result column="is_sys" jdbcType="VARCHAR" property="isSys" />
+        <result column="useable" jdbcType="VARCHAR" property="useable" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+        <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, office_id, name, enname, role_type, data_scope, is_sys, useable, create_by, create_time, update_by, update_time, remarks, del_flag
+    </sql>
+    
+    <sql id="Base_Column_List1">
+        role.id as 'id', 
+        role.office_id as 'officeId', 
+        role.name as 'name', 
+        role.enname as 'enname', 
+        role.role_type as 'roleType', 
+        role.data_scope as 'dataScope', 
+        role.is_sys as 'isSys', 
+        role.useable as 'useable', 
+        role.create_by as 'createBy', 
+        role.create_time as 'createTime', 
+        role.update_by as 'updateBy', 
+        role.update_time as 'updateTime', 
+        role.remarks as 'remarks', 
+        role.del_flag as 'delFlag',
+        office.name as 'officeName'
+    </sql>
+
+    <sql id="Export_Column_List">
+        role.id as 'id', 
+        role.office_id as 'officeId', 
+        role.name as 'name', 
+        role.enname as 'enname', 
+        role.role_type as 'roleType', 
+        role.data_scope as 'dataScope', 
+        role.is_sys as 'isSys', 
+        role.useable as 'useable', 
+        role.create_by as 'createBy', 
+        role.create_time as 'createTime', 
+        role.update_by as 'updateBy', 
+        role.update_time as 'updateTime', 
+        role.remarks as 'remarks', 
+        role.del_flag as 'delFlag',
+        office1.name as 'officeName',
+        office2.name as 'officeParentName'
+    </sql>
+
+
+    <insert id="addRole" parameterType="com.dyzhsw.efficient.entity.SysRole">
+        INSERT INTO sys_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="officeId != null">
+                office_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="enname != null">
+                enname,
+            </if>
+            <if test="roleType != null">
+                role_type,
+            </if>
+            <if test="dataScope != null">
+                data_scope,
+            </if>
+            <if test="isSys != null">
+                is_sys,
+            </if>
+            <if test="useable != null">
+                useable,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remarks != null">
+                remarks,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="officeId != null">
+                #{officeId, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="enname != null">
+                #{enname, jdbcType=VARCHAR},
+            </if>
+            <if test="roleType != null">
+                #{roleType, jdbcType=VARCHAR},
+            </if>
+            <if test="dataScope != null">
+                #{dataScope, jdbcType=VARCHAR},
+            </if>
+            <if test="isSys != null">
+                #{isSys, jdbcType=VARCHAR},
+            </if>
+            <if test="useable != null">
+                #{useable, jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                #{createBy, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy, jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="remarks != null">
+                #{remarks, jdbcType=VARCHAR},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag, jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="deletedRole" parameterType="java.lang.String">
+        UPDATE sys_role
+        SET del_flag = 1, update_by = #{currUserId, jdbcType=VARCHAR}, update_time = now()
+        WHERE id=#{id, jdbcType=VARCHAR}
+    </update>
+
+
+    <select id="selectByUserId" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysRole">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_role r JOIN sys_user_role ur ON r.id = ur.role_id AND ur.user_id = #{userId, jdbcType=VARCHAR} AND r.del_flag = 0
+    </select>
+    
+    
+    <select id="selectByOfficeId" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysRole">
+        SELECT <include refid="Base_Column_List1"/>
+        FROM sys_role role
+        LEFT JOIN sys_office office ON office.id = role.office_id
+        WHERE role.del_flag = 0
+        <if test="name != null and name != '' ">
+            and role.name like CONCAT(CONCAT('%', #{name}), '%')
+        </if>
+        <if test="officeIdList != null">
+            AND role.office_id IN
+            <foreach collection="officeIdList" index="index" item="officeId" open="(" separator="," close=")">
+                #{officeId}
+            </foreach>
+        </if>
+        ORDER BY role.create_time DESC
+    </select>
+
+
+    <select id="selectById" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysRole">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_role
+        WHERE id = #{id, jdbcType=VARCHAR}
+        AND del_flag = 0
+    </select>
+
+
+    <update id="updateSysRoleInfo" parameterType="com.dyzhsw.efficient.entity.SysRole">
+        UPDATE sys_role
+        <set>
+            <if test="officeId != null">
+                office_id = #{officeId, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="enname != null">
+                enname = #{enname, jdbcType=VARCHAR},
+            </if>
+            <if test="roleType != null">
+                role_type = #{roleType, jdbcType=VARCHAR},
+            </if>
+            <if test="dataScope != null">
+                data_scope = #{dataScope, jdbcType=VARCHAR},
+            </if>
+            <if test="isSys != null">
+                is_sys = #{isSys, jdbcType=VARCHAR},
+            </if>
+            <if test="useable != null">
+                useable = #{useable, jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy, jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks, jdbcType=VARCHAR},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag, jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+	<select id="selectBySysRole" resultType="com.dyzhsw.efficient.entity.SysRole">
+        SELECT <include refid="Export_Column_List"/>
+        FROM sys_role role left join sys_office office1 on
+        role.office_id = office1.id
+        left join sys_office office2 on
+        office1.parent_id = office2.id
+        <where>
+            	role.del_flag = 0
+            <if test="name != null and name != '' ">
+                and role.name like CONCAT(CONCAT('%', #{name}), '%')
+            </if>
+            <if test="officeId != null and officeId != '' ">
+                and role.office_id = #{officeId, jdbcType=VARCHAR}
+            </if>
+        </where>
+         ORDER BY role.create_time DESC
+        </select>
+
+    <select id="getIsSysRoleId" resultType="java.lang.String">
+        SELECT id FROM sys_role
+        WHERE del_flag = 0
+        AND is_sys = '1'
+    </select>
+
+    <update id="updateOfficeId" parameterType="java.lang.String">
+        UPDATE sys_user
+        SET office_id = '', update_by = #{currUserId, jdbcType=VARCHAR}, update_time = now()
+        WHERE office_id = #{officeId, jdbcType=VARCHAR}
+    </update>
+</mapper>

@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.SysMenuDao">
+    <resultMap id="BaseResultMap" type="com.dyzhsw.efficient.entity.SysMenu">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
+        <result column="parent_ids" jdbcType="VARCHAR" property="parentId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="sort" jdbcType="DECIMAL" property="sort" />
+        <result column="href" jdbcType="VARCHAR" property="href" />
+        <result column="target" jdbcType="VARCHAR" property="target" />
+        <result column="icon" jdbcType="VARCHAR" property="icon" />
+        <result column="is_show" jdbcType="VARCHAR" property="isShow" />
+        <result column="permission" jdbcType="VARCHAR" property="permission" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+        <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+        <result column="component" jdbcType="VARCHAR" property="component" />
+        <result column="operation" jdbcType="VARCHAR" property="operation" />
+        <result column="meta" jdbcType="VARCHAR" property="meta" />
+        <result column="redirect" jdbcType="VARCHAR" property="redirect" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, parent_id, parent_ids, name, sort, href, target, icon, is_show, permission, create_by, create_time, update_by, update_time,
+        remarks, del_flag, component, operation, meta, redirect
+    </sql>
+    
+    <sql id="Export_Column_List">
+        menu1.id as '', 
+        menu1.parent_id as 'parentId', 
+        menu1.parent_ids as 'parentIds', 
+        menu1.name as 'name', 
+        menu1.sort as 'sort', 
+        menu1.href as 'href', 
+        menu1.target as 'target', 
+        menu1.icon as 'icon', 
+        menu1.is_show as 'isShow', 
+        menu1.permission as 'permission', 
+        menu1.create_by as 'createBy', 
+        menu1.create_time as 'createTime', 
+        menu1.update_by as 'updateBy', 
+        menu1.update_time as 'updateTime',
+        menu1.remarks as 'remarks', 
+        menu1.del_flag as 'delFlag',
+        menu2.name as 'parentName'
+    </sql>
+
+
+    <insert id="addMenu" parameterType="com.dyzhsw.efficient.entity.SysMenu">
+        INSERT INTO sys_menu
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            <if test="parentIds != null">
+                parent_ids,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="sort != null">
+                sort,
+            </if>
+            <if test="href != null">
+                href,
+            </if>
+            <if test="target != null">
+                target,
+            </if>
+            <if test="icon != null">
+                icon,
+            </if>
+            <if test="isShow != null">
+                is_show,
+            </if>
+            <if test="permission != null">
+                permission,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remarks != null">
+                remarks,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="component != null">
+                component,
+            </if>
+            <if test="operation != null">
+                operation,
+            </if>
+            <if test="meta != null">
+                meta,
+            </if>
+            <if test="redirect != null">
+                redirect,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id, jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null">
+                #{parentId, jdbcType=VARCHAR},
+            </if>
+            <if test="parentIds != null">
+                #{parentIds, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null">
+                #{sort, jdbcType=DECIMAL},
+            </if>
+            <if test="href != null">
+                #{href, jdbcType=VARCHAR},
+            </if>
+            <if test="target != null">
+                #{target, jdbcType=VARCHAR},
+            </if>
+            <if test="icon != null">
+                #{icon, jdbcType=VARCHAR},
+            </if>
+            <if test="isShow != null">
+                #{isShow, jdbcType=VARCHAR},
+            </if>
+            <if test="permission != null">
+                #{permission, jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                #{createBy, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy, jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="remarks != null">
+                #{remarks, jdbcType=VARCHAR},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag, jdbcType=INTEGER},
+            </if>
+            <if test="component != null">
+                #{component, jdbcType=VARCHAR},
+            </if>
+            <if test="operation != null">
+                #{operation, jdbcType=VARCHAR},
+            </if>
+            <if test="meta != null">
+                #{meta, jdbcType=VARCHAR},
+            </if>
+            <if test="redirect != null">
+                #{redirect, jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="deletedMenu" parameterType="java.lang.String">
+        UPDATE sys_menu
+        SET del_flag = 1, update_by = #{currUserId, jdbcType=VARCHAR}, update_time = now()
+        WHERE id=#{id, jdbcType=VARCHAR}
+    </update>
+
+
+    <select id="getMaxParentMenu" resultType="com.dyzhsw.efficient.entity.SysMenu">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_menu
+        WHERE (parent_id = NULL OR parent_id = '' OR parent_id = '0')
+        AND del_flag = 0 AND is_show = '0'
+    </select>
+
+
+    <select id="selectChildById" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysMenu">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_menu
+        WHERE parent_id = #{id, jdbcType=VARCHAR}
+        <if test="name != null and name != '' ">
+            AND `name` LIKE CONCAT(CONCAT('%', #{name}), '%')
+        </if>
+        <if test="isShow != null and isShow != '' ">
+            AND is_show = #{isShow}
+        </if>
+        AND del_flag = 0 AND operation = '0' ORDER BY sort
+    </select>
+
+
+    <select id="getMenuChild" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysMenu">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_menu
+        WHERE parent_id = #{id, jdbcType=VARCHAR}
+        AND del_flag = 0 ORDER BY sort
+    </select>
+
+
+    <update id="updateSysMenuInfo" parameterType="com.dyzhsw.efficient.entity.SysMenu">
+        update sys_menu
+        <set>
+            <if test="parentId != null">
+                parent_id = #{parentId, jdbcType=VARCHAR},
+            </if>
+            <if test="parentIds != null">
+                parent_ids = #{parentIds, jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name, jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null">
+                sort = #{sort, jdbcType=DECIMAL},
+            </if>
+            <if test="href != null">
+                href = #{href, jdbcType=VARCHAR},
+            </if>
+            <if test="target != null">
+                target = #{target, jdbcType=VARCHAR},
+            </if>
+            <if test="icon != null">
+                icon = #{icon, jdbcType=VARCHAR},
+            </if>
+            <if test="isShow != null">
+                is_show = #{isShow, jdbcType=VARCHAR},
+            </if>
+            <if test="permission != null">
+                permission = #{permission, jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy, jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy, jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime, jdbcType=TIMESTAMP},
+            </if>
+            <if test="remarks != null">
+                remarks = #{remarks, jdbcType=VARCHAR},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag, jdbcType=INTEGER},
+            </if>
+            <if test="component != null">
+                component = #{component, jdbcType=VARCHAR},
+            </if>
+            <if test="operation != null">
+                operation = #{operation, jdbcType=VARCHAR},
+            </if>
+            <if test="meta != null">
+                meta = #{meta, jdbcType=VARCHAR},
+            </if>
+            <if test="redirect != null">
+                redirect = #{redirect, jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+    
+    <select id="selectBySysMenu" resultType="com.dyzhsw.efficient.entity.SysMenu">
+        SELECT <include refid="Export_Column_List"/>
+        FROM sys_menu menu1 left join sys_menu menu2 on
+        menu1.parent_id = menu2.id
+        <where>
+        	<!-- (menu1.parent_id = NULL OR menu1.parent_id = '' OR menu1.parent_id = '0') and  -->menu1.del_flag = 0
+        	and menu1.operation = 0
+        	<if test="name != null and name != '' ">
+				and LOCATE(#{name},menu1.name)>0
+			</if>
+			<if test="isShow != null and isShow != '' ">
+				and menu1.is_show = #{isShow}
+			</if>
+        </where>
+        ORDER BY menu1.sort
+    </select>
+
+    <select id="getSysMenuInfo" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.SysMenu">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_menu
+        WHERE id = #{id, jdbcType=VARCHAR}
+        <if test="name != null and name != '' ">
+            AND `name` LIKE CONCAT(CONCAT('%', #{name}), '%')
+        </if>
+        <if test="isShow != null and isShow != '' ">
+            AND is_show = #{isShow}
+        </if>
+        AND del_flag = 0 ORDER BY sort
+    </select>
+
+    <select id="getHiddenMenu" resultType="java.lang.String">
+        SELECT id FROM sys_menu
+        WHERE del_flag = 0 AND operation = '1'
+        ORDER BY sort
+    </select>
+
+    <select id="checkPath" resultType="com.dyzhsw.efficient.entity.SysMenu">
+        SELECT <include refid="Base_Column_List"/>
+        FROM sys_menu
+        WHERE target = #{path, jdbcType=VARCHAR}
+        AND id IN
+        <foreach collection="menuIdList" index="index" item="menuId" open="(" separator="," close=")">
+            #{menuId}
+        </foreach>
+    </select>
+
+</mapper>

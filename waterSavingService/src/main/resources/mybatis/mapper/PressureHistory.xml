@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dyzhsw.efficient.dao.PressureHistoryDao">
+  
+    <sql id="Base_Column_List">
+          IFNULL(a.id,"") AS id, 
+          IFNULL(a.address,"") AS address, 
+          IFNULL(a.main_channel,"") AS mainchannel, 
+          IFNULL(a.assist_channel,"") AS assistchannel, 
+          IFNULL(a.main_channel_units,"") AS mainchannelunits, 
+          IFNULL(a.assist_channel_units,"") AS assistchannelunits, 
+          IFNULL(a.battery_voltage,"") AS batteryvoltage, 
+          IFNULL(a.signals,"") AS signals, 
+          IFNULL(a.upload_time,"") AS uploadtime,
+          IFNULL(a.main_channel_high,"") AS mainchannelhigh, 
+          IFNULL(a.main_channel_lower,"") AS mainchannellower,
+          IFNULL(a.pressure_safey,"") AS pressuresafey,
+          IFNULL(eq.name,"") AS equipname
+    </sql>
+
+    <select id="selectAll" resultType="com.dyzhsw.efficient.entity.PressureHistory" parameterType ="java.util.Map">
+    select
+ 		<include refid="Base_Column_List"/>
+	from pressure_meter_message_history a
+	 left join equipment_info eq on eq.equipment_no = a.address
+	<where>
+  		1=1 
+  	   <if test="address != null and address != '' ">
+  		       and a.address like concat(#{address},'%') 
+  	   </if>
+  	   <if test="equipname != null and equipname != '' ">
+  		      and eq.name like concat(#{equipname},'%')
+  	   </if>
+  	   <if test="officeid != null and officeid != '' ">
+  		      and eq.office_id= #{officeid}
+  	   </if>
+  	   <if test="groupingid != null and groupingid != '' ">
+  		      and eq.grouping_id = #{groupingid}
+  	   </if>
+  	   <if test="start != null and start != '' ">
+		 <![CDATA[
+			  and a.upload_time >= #{start}
+		 ]]>	
+		</if>
+		<if test="end != null and end != '' ">
+		<![CDATA[
+			 and a.upload_time <= #{end}
+		 ]]>		
+		</if> 
+	</where>
+		order by a.upload_time DESC
+    </select>
+
+
+	<select id="selectGraphByEquNo" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.PressureHistory">
+		SELECT <include refid="Base_Column_List"/>
+		FROM pressure_meter_message_history a
+		left join equipment_info eq on eq.equipment_no = a.address
+		WHERE a.address = #{equNo, jdbcType=VARCHAR}
+		AND <![CDATA[ DATE_SUB(CURDATE(), INTERVAL 30 DAY) <= a.upload_time ]]>
+		ORDER  BY upload_time DESC limit 500
+	</select>
+
+	<select id="selectByEquNo" parameterType="java.lang.String" resultType="com.dyzhsw.efficient.entity.PressureHistory">
+		SELECT <include refid="Base_Column_List"/>
+		FROM pressure_meter_message_history a
+		left join equipment_info eq on eq.equipment_no = a.address
+		WHERE a.address = #{equNo, jdbcType=VARCHAR}
+		order by a.upload_time DESC
+	</select>
+	
+       <select id="selectnewdata" resultType="com.dyzhsw.efficient.entity.PressureHistory" parameterType ="java.util.Map">
+   		 select
+ 		<include refid="Base_Column_List"/>
+		from pressure_meter_message a
+		 left join equipment_info eq on eq.equipment_no = a.address
+		<where>
+	  		1=1 
+	  	   <if test="address != null and address != '' ">
+	  		       and a.address = #{address}
+	  	   </if>
+		</where>		
+    </select>
+</mapper>
